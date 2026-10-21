@@ -697,6 +697,23 @@ final class DeviceStore: ObservableObject {
         }
     }
 
+    /// DroidDeck'in başlattığı harici scrcpy penceresini kapatır.
+    ///
+    /// NEDEN GEREKLİ: `localabstract:scrcpy` soketi cihaz başına TEK'tir.
+    /// Küçük önizleme ile büyük ekran aynı anda çalışamaz. Bizim başlattığımız
+    /// pencereyi bulmak için başlığındaki benzersiz öntanı kullanılır
+    /// ("DroidDeck · <serial>") — başka scrcpy oturumlarına dokunulmaz.
+    /// `true` dönerse gerçekten bir oturum sonlandırıldı.
+    @discardableResult
+    func stopExternalScrcpy() -> Bool {
+        // Yalnızca BİZİM başlattığımız pencereyi hedefle. `launchScrcpy`
+        // pencere başlığına "DroidDeck · <serial>" koyar; pkill -f bunu
+        // komut satırında arar. Başka scrcpy oturumlarına dokunulmaz.
+        let probe = ProcessRunner.run("/usr/bin/pkill",
+                                      arguments: ["-f", "DroidDeck ·"], timeout: 5)
+        return probe.exitCode == 0
+    }
+
     /// Kullanıcının isteğiyle bağlantı kurtarması — geneldir, hiçbir cihaza
     /// özel bilgi içermez. `adb kill-server` + `start-server` + yeniden tara.
     func recoverConnection() {
@@ -787,6 +804,14 @@ final class DeviceStore: ObservableObject {
         }
         guard let adbPath else { return }
         lastError = nil   // yeni eylem başlıyor
+
+        // ÖNEMLİ SINIR: cihaz başına yalnızca BİR scrcpy oturumu çalışabilir
+        // (`localabstract:scrcpy` soketi tek). Daha önce büyük ekranı açtıysan,
+        // küçük önizlemeyi başlatmak onu sonlandırır. Bunu sessizce yapmak
+        // yerine kullanıcıya söylüyoruz.
+        if stopExternalScrcpy() {
+            previewStatus = "Büyük ekran kapatıldı — küçük önizleme başlatılıyor"
+        }
 
         // Önceki oturum varsa (önceki cihazdan kalmış olabilir) mutlaka kapat.
         if previewClient != nil {

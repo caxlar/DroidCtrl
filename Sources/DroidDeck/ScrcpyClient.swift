@@ -183,8 +183,14 @@ final class ScrcpyClient {
 
         let remotePath = "/data/local/tmp/scrcpy-server.jar"
 
-        // 0) Eski sunucu süreçlerini temizle — aksi halde `localabstract:scrcpy`
-        //    soketini tutarlar ve yeni istemci boş bir bağlantı okur.
+        // 0) Eski sunucu süreçlerini temizle.
+        //
+        // ÖNEMLİ SINIR: `localabstract:scrcpy` soketi cihaz başına TEK'tir.
+        // Yani aynı anda yalnızca BİR scrcpy oturumu çalışabilir — küçük
+        // önizleme ile büyük ekran (harici scrcpy) yan yana olamaz. Bu yüzden
+        // burada yalnızca kendi ölü oturumumuzun kalıntılarını temizliyoruz;
+        // canlı bir oturum varsa uygulama bunu bilerek sonlandırmalı ve
+        // kullanıcıya söylemeli (bkz. DeviceStore.startPreview).
         _ = run(adbPath, ["-s", serial, "shell", "pkill -f scrcpy-server"])
         usleep(400_000)
 
@@ -199,10 +205,10 @@ final class ScrcpyClient {
         // 2) Yerel port bul + tünel kur.
         let port = try freeLocalPort()
         log("yerel port: \(port)")
-        // Bu cihaz için GERİDE KALMIŞ yönlendirmeleri temizle. Önceki
-        // oturumlar temiz kapanmadıysa (çökme, kopma) ölü kayıtlar birikir
-        // ve yeni oturum yanlış porta bağlanır.
-        removeStaleForwards(adbPath: adbPath, serial: serial)
+        // YALNIZCA kendi kaydımızı temizle. Başka oturumların (örn. harici
+        // scrcpy penceresi) yönlendirmelerine dokunmak onları koparır —
+        // yanlışlıkla yaptım, kullanıcı büyük ekranını kaybediyordu.
+        _ = run(adbPath, ["-s", serial, "forward", "--remove", "tcp:\(port)"])
         let fwd = run(adbPath, ["-s", serial, "forward", "tcp:\(port)", "localabstract:scrcpy"])
         guard fwd.exitCode == 0 else { throw BootError.forwardFailed(fwd.combined) }
         boundForwardPort = Int32(port)
@@ -783,26 +789,6 @@ final class ScrcpyClient {
     }
 
     // MARK: - Durdurma
-
-    /// Bu cihaz için birikmiş `localabstract:scrcpy` yönlendirmelerini temizler.
-    ///
-    /// NEDEN GEREKLİ: her oturum bir `adb forward` kaydı oluşturur. Temiz
-    /// kapanmayan her oturum (çökme, ağ kopması, uygulama zorla kapanması)
-    /// geride kayıt bırakır. Bunlar birikince yeni oturum ÖLÜ bir
-    /// yönlendirmeye bağlanır → siyah ekran, donma. (Bizzat yaşandı: 8 kayıt.)
-    private func removeStaleForwards(adbPath: String, serial: String) {
-        let listed = run(adbPath, ["-s", serial, "forward", "--list"])
-        for line in listed.stdout.split(separator: "\n") {
-            // Biçim: "<serial> tcp:<port> localabstract:scrcpy"
-            let parts = line.split(separator: " ")
-            guard parts.count >= 3 else { continue }
-            guard parts[0].hasPrefix(serial) || String(parts[0]).contains(serial) else { continue }
-            guard String(parts[2]) == "localabstract:scrcpy" else { continue }
-            let portSpec = String(parts[1])
-            _ = run(adbPath, ["-s", serial, "forward", "--remove", portSpec])
-            log("ölü yönlendirme temizlendi: \(portSpec)")
-        }
-    }
 
     /// Soketleri, süreçleri VE cihaz tarafındaki sunucuyu temizler.
     ///
