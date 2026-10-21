@@ -8,20 +8,55 @@
 //  doldurulur. Tasarımda olup henüz karşılığı olmayan düğmeler görünür kalır
 //  (ileride geliştirilecek); olanlar gerçek işlevlere bağlanır.
 //
+//  GÜVENLİK: `TDVisualActions` geri çağrıları yalıtımsız (non-isolated)
+//  kapanışlardır. SwiftUI bunları ana iş parçacığında çağırır ama bu garanti
+//  DEĞİL; `@MainActor` metodu doğrudan çağırmak çalışma zamanı çökmesine yol
+//  açabilir. Bu yüzden tüm girişler `onMain` üzerinden geçer.
+//
 
 import SwiftUI
 import AppKit
 
 @MainActor
 final class DashboardBridge: ObservableObject {
-    /// Gerçek `DeviceStore`. `DashboardHost` `.task` içinde bağlar
-    /// (`@EnvironmentObject` init sırasında erişilemez).
+    /// Gerçek `DeviceStore`.
     var store: DeviceStore
+
     /// Sol kenar çubuğu seçimi ("Cihazlar" / "Ayarlar" / "Hakkında").
     @Published var sidebarSection = "Cihazlar"
+    /// Son otomatik yükleme yapılan cihaz — tekrar tekrar yüklememek için.
+    private var autoLoadedForDevice: String?
+    /// Son otomatik önizleme başlatılan cihaz.
+    private var autoPreviewForDevice: String?
 
     init(store: DeviceStore) {
         self.store = store
+    }
+
+    /// Gerçek store'u bağla. `DashboardHost.onAppear` çağırır.
+    func bind(to newStore: DeviceStore) {
+        store = newStore
+        objectWillChange.send()
+    }
+
+    // MARK: - Otomatik yükleme
+
+    /// Seçili cihaz değiştiğinde: uygulamaları ve canlı önizlemeyi OTOMATİK
+    /// başlat. Eskiden bunlar için ayrı düğmeler vardı; kaldırılınca uygulama
+    /// listesi boş kalmıştı.
+    func deviceSelectionChanged() {
+        objectWillChange.send()
+
+        guard let device = store.selectedDevice, device.state == .ready else { return }
+
+        if autoLoadedForDevice != device.serial {
+            autoLoadedForDevice = device.serial
+            store.loadApps()
+        }
+        if autoPreviewForDevice != device.serial {
+            autoPreviewForDevice = device.serial
+            store.startPreview()
+        }
     }
 
     // MARK: - Veri dönüşümü
@@ -53,7 +88,7 @@ final class DashboardBridge: ObservableObject {
         }
     }
 
-    /// Önizleme görünümü — canlı scrcpy akışı veya hazır görsel.
+    /// Önizleme görünümü — CANLI scrcpy akışı. Hazır görsel değil.
     var screenContent: AnyView? {
         guard store.currentPreviewClient != nil else { return nil }
         return AnyView(VideoSurface())
@@ -63,38 +98,54 @@ final class DashboardBridge: ObservableObject {
 
     func makeActions() -> TDVisualActions {
         TDVisualActions(
-            scan: { [weak self] in
-                self?.store.refresh(clearError: true)
-            },
+            scan: { [weak self] in self?.onMain { $0.store.refresh(clearError: true) } },
             connect: { [weak self] device in
-                self?.store.connect(to: device.address)
+                self?.onMain { $0.store.connect(to: device.address) }
             },
             connectAddress: { [weak self] address in
-                let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !trimmed.isEmpty else {
-                    self?.store.lastError = "Önce bir IP:port girin"
-                    return
+                self?.onMain { bridge in
+                    let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty else {
+                        bridge.store.lastError = "Önce bir IP:port girin"
+                        return
+                    }
+                    bridge.store.connect(to: trimmed)
                 }
-                self?.store.connect(to: trimmed)
             },
             selectDevice: { [weak self] device in
-                self?.store.selectedDeviceID = device.id
+                self?.onMain { $0.store.selectedDeviceID = device.id }
             },
             navigation: { [weak self] command in
-                self?.handleNavigation(command)
+                self?.onMain { $0.handleNavigation(command) }
             },
             openApp: { [weak self] app in
-                guard let self else { return }
-                if let match = self.store.apps.first(where: { $0.packageName == app.packageName }) {
-                    self.store.launch(match)
-                } else {
-                    self.store.lastError = "Uygulama bulunamadı: \(app.packageName)"
+                self?.onMain { bridge in
+                    if let match = bridge.store.apps.first(where: { $0.packageName == app.packageName }) {
+                        bridge.store.launch(match)
+                    } else {
+                        bridge.store.lastError = "Uygulama bulunamadı: \(app.packageName)"
+                    }
                 }
             },
             command: { [weak self] command in
-                self?.handleCommand(command)
+                self?.onMain { $0.handleCommand(command) }
             }
         )
+    }
+
+    /// Yalıtımsız geri çağrıları güvenli biçimde ana iş parçacığına taşır.
+    ///
+    /// Zaten ana iş parçacığındaysak EŞZAMANLI çalışır (düğme gecikmesi yok);
+    /// değilse ana kuyruğa alınır. Bu, `@MainActor` metoda yalıtımsız erişimden
+    /// doğan çalışma zamanı çökmesini engeller.
+    private func onMain(_ work: @escaping (DashboardBridge) -> Void) {
+        if Thread.isMainThread {
+            work(self)
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                if let self { work(self) }
+            }
+        }
     }
 
     // MARK: - Gezinme
@@ -128,6 +179,14 @@ final class DashboardBridge: ObservableObject {
         case "wake":         store.wakeAndUnlock()
         case "fullscreen":   store.openScrcpy()
         case "display":      store.wakeAndUnlock()
+        case "disconnect":
+            if let device = store.selectedDevice {
+                store.disconnect(device)
+                autoLoadedForDevice = nil
+                autoPreviewForDevice = nil
+            }
+        case "loadApps":
+            store.loadApps()
         case "reboot":
             store.lastError = "'Cihazı Yeniden Başlat' henüz geliştirilmedi"
         case "deviceInfo":
@@ -145,6 +204,7 @@ final class DashboardBridge: ObservableObject {
                 store.lastError = "Bu düğme henüz geliştirilmedi: \(command)"
             }
         }
+        objectWillChange.send()
     }
 
     // MARK: - Dosya seçici
@@ -163,8 +223,8 @@ final class DashboardBridge: ObservableObject {
             panel.title = "Cihaza Aktarılacak Dosyaları Seç"
         }
         panel.begin { [weak self] response in
-            guard response == .OK, let self else { return }
-            self.store.handleDroppedFiles(panel.urls)
+            guard response == .OK else { return }
+            self?.onMain { $0.store.handleDroppedFiles(panel.urls) }
         }
     }
 

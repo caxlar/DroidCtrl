@@ -23,9 +23,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @MainActor
 struct DroidDeckApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var store = DeviceStore()
+    @StateObject private var store: DeviceStore
+    @StateObject private var bridge: DashboardBridge
 
     init() {
+        // Köprü gerçek store'a bağlanır — sahte/ikinci bir store ÜRETİLMEZ.
+        let s = DeviceStore()
+        _store = StateObject(wrappedValue: s)
+        _bridge = StateObject(wrappedValue: DashboardBridge(store: s))
         // Tanılama modları arayüz açmadan çalışır:
         //   DroidDeck --selftest       ayrıştırıcı testleri (cihaza dokunmaz)
         //   DroidDeck --probe          gerçek cihaza karşı okuma testleri
@@ -72,7 +77,7 @@ struct DroidDeckApp: App {
 
     var body: some Scene {
         WindowGroup("DroidDeck") {
-            DashboardHost()
+            DashboardHost(store: store, bridge: bridge)
                 .environmentObject(store)
                 .task {
                     appDelegate.store = store

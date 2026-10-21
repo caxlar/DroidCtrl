@@ -464,8 +464,10 @@ struct TrebleDroidPixelDashboard: View {
             Text("Araçlar").font(.system(size: 16, weight: .bold))
             quickAction("Cihaz Bilgileri", "info.circle", "deviceInfo")
             quickAction("Ekranı Uyandır", "sun.max", "wake")
+            quickAction("Uygulamaları Yenile", "arrow.triangle.2.circlepath", "loadApps")
+            quickAction("Bağlantıyı Kes", "wifi.slash", "disconnect")
             quickAction("Cihazı Yeniden Başlat", "arrow.clockwise", "reboot")
-        }.frame(height: 305, alignment: .top)
+        }.frame(height: 340, alignment: .top)
     }
     private var appList: some View {
         VStack(alignment: .leading, spacing: 8) {

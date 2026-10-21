@@ -11,15 +11,13 @@ import SwiftUI
 ///
 /// Tasarım dosyası (`TrebleDroidPixelDashboard.swift`) olduğu gibi korunur;
 /// yalnızca veri ve eylem bağlaması bu sarmalayıcıdan yapılır.
+///
+/// ÖNEMLİ: Burada SAHTE bir `DeviceStore` ÜRETİLMEZ. Eskiden init içinde
+/// ikinci bir store açılıyordu; bu iki kez tarama/timer başlatıyor ve
+/// düğme eylemleri yanlış store'a gidiyordu.
 struct DashboardHost: View {
-    @EnvironmentObject private var store: DeviceStore
-    @StateObject private var bridge: DashboardBridge
-
-    init() {
-        // `@EnvironmentObject` init sırasında erişilemez; köprü, gerçek
-        // store referansını `.task` içinde bağlar.
-        _bridge = StateObject(wrappedValue: DashboardBridge(store: DeviceStore()))
-    }
+    @ObservedObject var store: DeviceStore
+    @ObservedObject var bridge: DashboardBridge
 
     var body: some View {
         TrebleDroidPixelDashboard(
@@ -28,14 +26,15 @@ struct DashboardHost: View {
             actions: bridge.makeActions(),
             screenContent: bridge.screenContent
         )
-        .task {
-            // Gerçek store'u köprüye bağla.
-            bridge.store = store
-            bridge.objectWillChange.send()
+        .onAppear {
+            bridge.bind(to: store)
             store.refresh()
         }
+        .onChange(of: store.selectedDeviceID) {
+            bridge.deviceSelectionChanged()
+        }
         .onChange(of: store.devices.count) {
-            bridge.objectWillChange.send()
+            bridge.deviceSelectionChanged()
         }
         .onChange(of: store.apps.count) {
             bridge.objectWillChange.send()
