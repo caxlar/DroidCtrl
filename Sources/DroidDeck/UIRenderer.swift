@@ -50,8 +50,8 @@ enum UIRenderer {
             store.statusMessage = "\(store.devices.count) cihaz · render"
         }
 
-        let size = CGSize(width: 1280, height: 822)
-        let content = StudioShell()
+        let size = CGSize(width: 1180, height: 1080)
+        let content = RenderHost()
             .environmentObject(store)
             .frame(width: size.width, height: size.height)
         writePNG(content, size: size, path: path)
