@@ -11,6 +11,10 @@ import Foundation
 // anında çözülür. Kullanıcı bunu bilmek zorunda kalmamalı.
 
 /// adb'nin geçici/bakım yapılabilir hata kalıpları.
+///
+/// YALNIZCA stderr üzerinde aranır. Önceleri stdout da taranıyordu; bu,
+/// `dumpsys wifi` çıktısında geçen "closed" gibi kelimelerin gerçek bir hatayı
+/// "geçici" göstermesine yol açıyordu.
 private let transientFailureMarkers: [String] = [
     "no route to host",
     "connection refused",
@@ -23,13 +27,22 @@ private let transientFailureMarkers: [String] = [
     "cannot connect",
     "connection timed out",
     "timed out",
-    "no devices/emulators found",
+    "error: no devices/emulators found",
+    "error: device",
+    "failed to connect",
 ]
 
 /// Bir komut sonucunun "yeniden başlatma ile düzeltilebilecek" türde olup olmadığını söyler.
 func isTransientADBFailure(_ result: CommandResult) -> Bool {
-    // Cihazın kendi verdiği bir hata değilse (örn. "unknown command") bakma.
-    let haystack = (result.stderr + "\n" + result.stdout).lowercased()
+    // ZAMAN AŞIMI da geçici sayılmalı: jitter'lı WiFi'deki asıl hata biçimi
+    // budur. Eskiden yalnızca metne bakılıyordu ve Türkçe "Zaman aşımı (…)"
+    // metni hiç tanınmıyordu — yani en sık görülen hata hiçbir zaman
+    // "geçici" sayılmıyordu.
+    if result.timedOut { return true }
+
+    // Yalnızca HATA akışına bak. stdout, komut çıktısıdır; içinde geçen
+    // kelimeler hata anlamına gelmez.
+    let haystack = result.stderr.lowercased()
     if haystack.isEmpty { return false }
     return transientFailureMarkers.contains { haystack.contains($0) }
 }
@@ -59,16 +72,28 @@ enum AdbMaintenance {
     }
 
     /// Gerekirse adb sunucusunu yeniden başlatır. `true` dönerse gerçekten yaptı.
+    ///
+    /// Kontrol + işaretleme TEK kilit ediniminde yapılır. Eskiden ikisi ayrı
+    /// kilitlenmişti ve iki iş parçacığı aynı anda geçerse **iki kez**
+    /// kill-server çalışabiliyordu.
     @discardableResult
     static func restartIfNeeded(force: Bool = false) -> Bool {
-        guard force || shouldRestart() else { return false }
-        markRestarted()
+        lock.lock()
+        let since = Date().timeIntervalSince(lastRestart)
+        guard force || since >= minimumRestartInterval else {
+            lock.unlock()
+            return false
+        }
+        lastRestart = Date()
+        lock.unlock()
 
-        _ = ProcessRunner.run(ADBService.locateADB() ?? "adb",
-                              arguments: ["kill-server"], timeout: 10)
-        _ = ProcessRunner.run(ADBService.locateADB() ?? "adb",
-                              arguments: ["start-server"], timeout: 15)
-        return true
+        guard let adbPath = ADBService.locateADB() else {
+            // adb bulunamadıysa "başardım" deme — çağıran yanılmamalı.
+            return false
+        }
+        _ = ProcessRunner.run(adbPath, arguments: ["kill-server"], timeout: 10)
+        let started = ProcessRunner.run(adbPath, arguments: ["start-server"], timeout: 20)
+        return started.succeeded
     }
 
     /// Test/teşhis için son restart zamanını sıfırlar.

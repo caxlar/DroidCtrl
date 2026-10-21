@@ -191,7 +191,10 @@ final class ScrcpyClient {
         // burada yalnızca kendi ölü oturumumuzun kalıntılarını temizliyoruz;
         // canlı bir oturum varsa uygulama bunu bilerek sonlandırmalı ve
         // kullanıcıya söylemeli (bkz. DeviceStore.startPreview).
-        _ = run(adbPath, ["-s", serial, "shell", "pkill -f scrcpy-server"])
+        // Seri kuyruktan: teardown'un pkill'i ile çakışmasın.
+        Self.serverOpsQueue.sync {
+            _ = run(adbPath, ["-s", serial, "shell", "pkill -f scrcpy-server"])
+        }
         usleep(400_000)
 
         // 1) Sunucuyu cihaza it. Sonuç YUTULMAMALI: push başarısız olursa sunucu
@@ -242,7 +245,11 @@ final class ScrcpyClient {
         let outPipe = Pipe()
         process.standardOutput = outPipe
         process.standardError = outPipe
-        try process.run()
+        // Aynı seri kuyruktan başlat: teardown'un gecikmiş pkill'i bu başlatmayı
+        // öldüremesin diye.
+        try Self.serverOpsQueue.sync {
+            try process.run()
+        }
         stateLock.lock()
         serverProcess = process
         stateLock.unlock()
@@ -468,21 +475,27 @@ final class ScrcpyClient {
 
     /// `count` baytı tam olarak okur.
     ///
-    /// fd erişimi `fdLock` ALTINDADIR: `teardown()` aynı kilidi alıp close()
-    /// ettiği için kapanış bu syscall ile çakışamaz. Aksi hâlde fd kapanıp
-    /// numarası başka bir kaynakça tarafından yeniden kullanılabilir ve biz
-    /// yabancı bir fd'ye okuma/yazma yapardık.
+    /// NEDEN `dup`: eskiden `fdLock` BLOK EDEN okuma boyunca tutuluyordu ve
+    /// `teardown()` fd'yi kilitsiz okuyordu. teardown taze yazılmış fd'yi
+    /// göremezse (`-1`) shutdown atlanır → `readExact` kilidi tutarak sonsuz
+    /// `read()`'te kalır → `teardown` kilit bekler → TÜM UYGULAMA donardı.
+    ///
+    /// Şimdi okuma kendi kopyası üzerinde yapılır; `fdLock` yalnızca fd'yi
+    /// kopyalarken tutulur. `shutdown()` soket düzeyinde çalıştığı için kopyayı
+    /// da uyandırır.
     private func readExact(_ count: Int, into array: inout [UInt8]) -> Bool {
         array.withUnsafeMutableBufferPointer { buf -> Bool in
             guard let base = buf.baseAddress else { return false }
 
             fdLock.lock()
-            defer { fdLock.unlock() }
-            guard videoFD >= 0 else { return false }
+            let fd = videoFD >= 0 ? dup(videoFD) : -1
+            fdLock.unlock()
+            guard fd >= 0 else { return false }
+            defer { close(fd) }
 
             var got = 0
             while got < count {
-                let n = Darwin.read(videoFD, base.advanced(by: got), count - got)
+                let n = Darwin.read(fd, base.advanced(by: got), count - got)
                 if n < 0 {
                     if errno == EINTR { continue }   // sinyalle kesildi: yeniden dene
                     return false
@@ -818,6 +831,15 @@ final class ScrcpyClient {
         fdLock.unlock()
     }
 
+    /// Cihaz tarafındaki sunucu işlemleri için SERİ kuyruk.
+    ///
+    /// NEDEN: `teardown()`'taki `pkill -f scrcpy-server` asenkron çalışıyordu.
+    /// adb meşgulken gecikirse, YENİ oturumun sunucusu başladıktan SONRA çalışır
+    /// ve kalıp onu öldürürdü → el sıkışma EOF, akışın ortasında kopma, siyah
+    /// ekran. (Belirti: "bazen çalışıyor, bazen siyah.") Artık pkill ve sunucu
+    /// başlatma aynı kuyruktan geçer; biri bitmeden diğeri başlamaz.
+    private static let serverOpsQueue = DispatchQueue(label: "droiddeck.scrcpy.serverops")
+
     /// Soketleri, süreçleri VE cihaz tarafındaki sunucuyu temizler.
     ///
     /// Başarısız başlatmalarda da çağrılmalıdır: aksi halde `scrcpy-server`
@@ -863,10 +885,13 @@ final class ScrcpyClient {
             process.terminate()
         }
 
-        // Cihaz tarafındaki sunucuyu arka planda kes — bu işlem ADB'ye gittiği
-        // için kullanıcı arayüzünü bloke etmemeli.
+        // Cihaz tarafındaki sunucuyu kes.
+        //
+        // SERİ KUYRUĞA alınır (global değil): aksi halde gecikmiş pkill yeni
+        // oturumun sunucusunu öldürebilir. `async` olduğu için arayüz bloke
+        // olmaz, ama sıradaki sunucu başlatma bu pkill'i bekler.
         if let adbPath, let serial {
-            DispatchQueue.global(qos: .utility).async {
+            Self.serverOpsQueue.async {
                 _ = ProcessRunner.run(adbPath,
                                       arguments: ["-s", serial, "shell", "pkill", "-f", "scrcpy-server"],
                                       timeout: 15)

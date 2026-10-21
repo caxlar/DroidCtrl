@@ -118,6 +118,10 @@ final class DeviceStore: ObservableObject {
         videoSize = .zero
         unlockStatus = ""
         transferStatus = ""
+        // YÜKLEME İPTALİ: yük sürerken cihaz değişirse sonuç blokları erken
+        // döner ve `isLoadingApps = false` hiç çalışmaz — dönen gösterge ve
+        // kilitli düğmeler kalıcı olurdu.
+        isLoadingApps = false
         syncTelemetry()
     }
 
@@ -586,6 +590,7 @@ final class DeviceStore: ObservableObject {
     @Published var transferStatus = ""
 
     private var telemetryTimer: Timer?
+    private var isPollingTelemetry = false
 
     /// Telemetri aralığı (saniye). Cihaza yük bindirmemek için bilinçli olarak
     /// seyrek — her tur yalnızca 3 adb süreci başlatır.
@@ -628,10 +633,17 @@ final class DeviceStore: ObservableObject {
 
     func refreshTelemetry() {
         guard let adb, let device = selectedDevice, device.state.isControllable else { return }
+        // ÖNCEKİ TUR BİTMEDEN YENİSİNİ BAŞLATMA. Kötü ağda her tur zaman
+        // aşımına uğradığında süreçler üst üste biner; her biri ~25 sn yaşar.
+        // Bu birikim hem jitter'ı artırır hem de adb'yi meşgul eder.
+        guard !isPollingTelemetry else { return }
+        isPollingTelemetry = true
+
         let serial = device.serial
         DispatchQueue.global(qos: .utility).async {
             let t = adb.telemetry(serial: serial)
             DispatchQueue.main.async {
+                self.isPollingTelemetry = false
                 guard self.selectedDevice?.serial == serial else { return }
                 self.telemetry = t
             }
