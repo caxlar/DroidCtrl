@@ -67,7 +67,7 @@ struct TelemetryStrip: View {
             }
         }
         .padding(8)
-        .background(Color.primary.opacity(0.05))
+        .background(Color.gray.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 

@@ -99,6 +99,11 @@ final class ScrcpyClient {
     /// Temizlikte cihaza erişmek için saklanır.
     private var boundADBPath: String?
     private var boundSerial: String?
+    /// Kurulan `adb forward` portu. Temizlikte MUTLAKA kaldırılmalı —
+    /// aksi halde her oturum geride `localabstract:scrcpy` yönlendirmesi
+    /// bırakır, bunlar birikir ve yeni oturumlar ÖLÜ bir yönlendirmeye
+    /// bağlanır (siyah ekran / takılma). Bizzat yaşandı: 8 kayit birikmişti.
+    private var boundForwardPort: Int32 = 0
     private let fdLock = NSLock()
     /// `formatDesc` / `serverProcess` gibi okuyucu iş parçacığı ile ana iş
     /// parçacığı arasında paylaşılan CF/süreç durumunu korur. Bu alanlarda
@@ -194,9 +199,13 @@ final class ScrcpyClient {
         // 2) Yerel port bul + tünel kur.
         let port = try freeLocalPort()
         log("yerel port: \(port)")
-        _ = run(adbPath, ["-s", serial, "forward", "--remove", "tcp:\(port)"])
+        // Bu cihaz için GERİDE KALMIŞ yönlendirmeleri temizle. Önceki
+        // oturumlar temiz kapanmadıysa (çökme, kopma) ölü kayıtlar birikir
+        // ve yeni oturum yanlış porta bağlanır.
+        removeStaleForwards(adbPath: adbPath, serial: serial)
         let fwd = run(adbPath, ["-s", serial, "forward", "tcp:\(port)", "localabstract:scrcpy"])
         guard fwd.exitCode == 0 else { throw BootError.forwardFailed(fwd.combined) }
+        boundForwardPort = Int32(port)
         log("forward kuruldu")
 
         // 3) Sunucuyu başlat (arka planda).
@@ -775,6 +784,26 @@ final class ScrcpyClient {
 
     // MARK: - Durdurma
 
+    /// Bu cihaz için birikmiş `localabstract:scrcpy` yönlendirmelerini temizler.
+    ///
+    /// NEDEN GEREKLİ: her oturum bir `adb forward` kaydı oluşturur. Temiz
+    /// kapanmayan her oturum (çökme, ağ kopması, uygulama zorla kapanması)
+    /// geride kayıt bırakır. Bunlar birikince yeni oturum ÖLÜ bir
+    /// yönlendirmeye bağlanır → siyah ekran, donma. (Bizzat yaşandı: 8 kayıt.)
+    private func removeStaleForwards(adbPath: String, serial: String) {
+        let listed = run(adbPath, ["-s", serial, "forward", "--list"])
+        for line in listed.stdout.split(separator: "\n") {
+            // Biçim: "<serial> tcp:<port> localabstract:scrcpy"
+            let parts = line.split(separator: " ")
+            guard parts.count >= 3 else { continue }
+            guard parts[0].hasPrefix(serial) || String(parts[0]).contains(serial) else { continue }
+            guard String(parts[2]) == "localabstract:scrcpy" else { continue }
+            let portSpec = String(parts[1])
+            _ = run(adbPath, ["-s", serial, "forward", "--remove", portSpec])
+            log("ölü yönlendirme temizlendi: \(portSpec)")
+        }
+    }
+
     /// Soketleri, süreçleri VE cihaz tarafındaki sunucuyu temizler.
     ///
     /// Başarısız başlatmalarda da çağrılmalıdır: aksi halde `scrcpy-server`
@@ -801,6 +830,14 @@ final class ScrcpyClient {
             videoFD = -1
         }
         fdLock.unlock()
+
+        // Kendi kurduğumuz `adb forward` kaydını da kaldır. Bunu yapmazsak
+        // her oturum geride ölü bir yönlendirme bırakır ve sonraki oturumlar
+        // yanlış porta bağlanır (siyah ekran / takılma).
+        if boundForwardPort > 0, let adbPath, let serial {
+            _ = run(adbPath, ["-s", serial, "forward", "--remove", "tcp:\(boundForwardPort)"])
+            boundForwardPort = 0
+        }
 
         // Süreç nesnesi de okuyucu/ana iş parçacıkları arasında paylaşılır.
         stateLock.lock()

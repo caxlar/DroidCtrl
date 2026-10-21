@@ -9,13 +9,26 @@ enum UIRenderer {
     static func render(to path: String, mode: String = "main") -> Never {
         let store = DeviceStore()
 
+        if mode == "swatch" {
+            // Teşhis: PNG yazıcısı renkleri doğru mu aktarıyor?
+            let size = CGSize(width: 400, height: 100)
+            let content = HStack(spacing: 0) {
+                Color.white.frame(width: 100, height: 100)
+                Color.gray.frame(width: 100, height: 100)
+                Color.blue.frame(width: 100, height: 100)
+                Color.red.frame(width: 100, height: 100)
+            }
+            .frame(width: size.width, height: size.height)
+            writePNG(content, size: size, path: path)
+        }
+
         if mode == "pairing" {
             // ScrollView ImageRenderer'da çizilmediği için talimatları doğrudan çizeriz.
             let size = CGSize(width: 640, height: 1260)
             let content = PairingInstructions()
                 .padding(20)
                 .frame(width: size.width, height: size.height, alignment: .topLeading)
-                .background(Color(nsColor: .windowBackgroundColor))
+                .background(Color.white)
             writePNG(content, size: size, path: path)
         }
 

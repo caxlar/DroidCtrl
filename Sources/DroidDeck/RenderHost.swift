@@ -26,7 +26,7 @@ struct RenderHost: View {
 
             StatusBar()
         }
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(Color.white)
     }
 }
 

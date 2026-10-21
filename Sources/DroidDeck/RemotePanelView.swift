@@ -33,7 +33,7 @@ struct RemotePanelView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background(Color.white)
         }
         .navigationTitle(store.selectedDevice?.displayName ?? "DroidDeck")
     }
@@ -90,9 +90,9 @@ private struct Header: View {
         HStack(spacing: 14) {
             Image(systemName: DeviceIcon.name(for: device))
                 .font(.system(size: 34))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(Color.blue)
                 .frame(width: 52, height: 52)
-                .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+                .background(Color.blue.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
@@ -154,11 +154,11 @@ struct RemoteButton: View {
             .frame(width: 68, height: 58)
             .background(
                 RoundedRectangle(cornerRadius: 11)
-                    .fill(isProminent ? Color.accentColor.opacity(0.18) : Color.primary.opacity(0.06))
+                    .fill(isProminent ? Color.blue.opacity(0.20) : Color.gray.opacity(0.10))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 11)
-                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(Color.gray.opacity(0.18), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -296,7 +296,7 @@ struct PreviewCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                        .strokeBorder(Color.gray.opacity(0.22), lineWidth: 1)
                 )
 
                 HStack(spacing: 8) {
@@ -474,7 +474,7 @@ struct AppsCard: View {
                     }
                 }
                 .padding(8)
-                .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
+                .background(Color.gray.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
 
                 if store.apps.isEmpty {
                     Text("Uygulama listesi boş. 'Listele' ile ana ekrandaki uygulamaları çekin.")
@@ -515,7 +515,7 @@ struct AppTile: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 9))
+            .background(Color.gray.opacity(0.10), in: RoundedRectangle(cornerRadius: 9))
         }
         .buttonStyle(.plain)
         .contextMenu {
@@ -548,11 +548,11 @@ struct Card<Content: View>: View {
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.primary.opacity(0.04))
+                .fill(Color.gray.opacity(0.09))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(Color.primary.opacity(0.07), lineWidth: 1)
+                .strokeBorder(Color.gray.opacity(0.18), lineWidth: 1)
         )
     }
 }
