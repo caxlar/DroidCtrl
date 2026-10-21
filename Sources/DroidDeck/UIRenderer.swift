@@ -9,6 +9,29 @@ enum UIRenderer {
     static func render(to path: String, mode: String = "main") -> Never {
         let store = DeviceStore()
 
+        if mode == "dashboard" {
+            // Yeni arayüz tasarımının render'ı (görsel doğrulama).
+            let size = CGSize(width: 1672, height: 941)
+            let content = TrebleDroidPixelDashboard(
+                devices: [
+                    .init(id: "adb-R8...HeVpcV", address: "192.168.1.8:34919", connected: true,
+                          nativePixelSize: CGSize(width: 1280, height: 1104)),
+                    .init(id: "adb-2...0131507", address: "192.168.1.7:5555", connected: false,
+                          nativePixelSize: CGSize(width: 800, height: 1280))
+                ],
+                apps: [
+                    .init(name: "Chrome", packageName: "com.android.chrome", symbol: "globe", color: .blue),
+                    .init(name: "Play Store", packageName: "com.android.vending", symbol: "play.fill", color: .green),
+                    .init(name: "Kamera", packageName: "com.google.android.GoogleCamera", symbol: "camera.fill", color: .gray),
+                    .init(name: "Ayarlar", packageName: "com.android.settings", symbol: "gearshape.fill", color: .blue),
+                    .init(name: "YouTube", packageName: "com.google.android.youtube", symbol: "play.rectangle.fill", color: .red),
+                    .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: .red)
+                ]
+            )
+            .frame(width: size.width, height: size.height)
+            writePNG(content, size: size, path: path)
+        }
+
         if mode == "swatch" {
             // Teşhis: PNG yazıcısı renkleri doğru mu aktarıyor?
             let size = CGSize(width: 400, height: 100)

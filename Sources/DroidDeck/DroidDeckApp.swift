@@ -72,7 +72,7 @@ struct DroidDeckApp: App {
 
     var body: some Scene {
         WindowGroup("DroidDeck") {
-            ContentView()
+            DashboardHost()
                 .environmentObject(store)
                 .task {
                     appDelegate.store = store
@@ -80,7 +80,7 @@ struct DroidDeckApp: App {
                 }
         }
         .windowResizability(.contentMinSize)
-        .defaultSize(width: 1180, height: 780)
+        .defaultSize(width: 1672, height: 941)
         .commands {
             // Yeni pencere komutunu kaldırıyoruz: tek bir kumanda penceresi yeterli.
             CommandGroup(replacing: .newItem) {}

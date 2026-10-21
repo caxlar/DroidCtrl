@@ -21,6 +21,7 @@ rm -rf "$DEST"
 mkdir -p "$DEST/Contents/MacOS" "$DEST/Contents/Resources"
 cp .build/release/DroidDeck "$DEST/Contents/MacOS/${APP_NAME}"
 cp Resources/Info.plist "$DEST/Contents/Info.plist"
+cp Resources/TabletPreview.png "$DEST/Contents/Resources/TabletPreview.png"
 
 # --- İmzalama -------------------------------------------------------------
 #

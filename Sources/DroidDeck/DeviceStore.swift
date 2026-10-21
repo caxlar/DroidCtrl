@@ -32,6 +32,12 @@ final class DeviceStore: ObservableObject {
 
     // MARK: - Ekran önizleme (yerleşik)
     @Published var previewActive = false
+    /// Dış katmanların canlı akış görünümünü oluşturabilmesi için okunur
+    /// kopya. (`previewClient` kendi başına private kalır.)
+    var currentPreviewClient: ScrcpyClient? {
+        guard previewActive, isPreviewBoundToSelection else { return nil }
+        return previewClient
+    }
     @Published var previewStatus = ""
     @Published var videoSize: CGSize = .zero
     /// Cihazın anlık sıcaklığı (°C) — termal koruma için.
