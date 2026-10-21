@@ -91,6 +91,7 @@ struct TrebleDroidPixelDashboard: View {
     @State private var address = ""
     @State private var search = ""
     @State private var keyboardText = ""
+    @State private var urlText = ""
     @State private var tab: ToolsTab = .navigation
     @State private var zoom: CGFloat = 1
 
@@ -462,13 +463,42 @@ struct TrebleDroidPixelDashboard: View {
         }.frame(height: 305, alignment: .top)
     }
     private var toolsView: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Araçlar").font(.system(size: 16, weight: .bold))
             quickAction("Cihaz Bilgileri", "info.circle", "deviceInfo")
             quickAction("Ekranı Uyandır", "sun.max", "wake")
             quickAction("Uygulamaları Yenile", "arrow.triangle.2.circlepath", "loadApps")
             quickAction("Bağlantıyı Kes", "wifi.slash", "disconnect")
             quickAction("Cihazı Yeniden Başlat", "arrow.clockwise", "reboot")
+
+            // Medya kontrolleri — aktif medya oturumuna gider.
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Medya").font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Palette.textMuted)
+                HStack(spacing: 6) {
+                    mediaButton("backward.end.alt", "previous")
+                    mediaButton("gobackward.15", "rewind")
+                    mediaButton("playpause.fill", "play-pause")
+                    mediaButton("goforward.15", "fast-forward")
+                    mediaButton("forward.end.alt", "next")
+                }
+            }
+            .padding(.top, 2)
+
+            // URL / link gönder.
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Bağlantı Gönder").font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Palette.textMuted)
+                TextField("https://…", text: $urlText)
+                    .textFieldStyle(.plain).font(.system(size: 11))
+                    .padding(9).frame(height: 38)
+                    .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
+                    .strokePanel(8)
+                primaryButton("Cihazda Aç", icon: "link") {
+                    actions.command("sendURL:\(urlText)")
+                }
+            }
+            .padding(.top, 2)
         }.frame(height: 340, alignment: .top)
     }
     private var appList: some View {
@@ -504,9 +534,19 @@ struct TrebleDroidPixelDashboard: View {
                             Button("Aç") { actions.openApp(app) }
                                 .font(.system(size: 12))
                                 .buttonStyle(.plain)
-                                .frame(width: 68, height: 35)
+                                .frame(width: 52, height: 35)
                                 .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8))
                                 .strokePanel(8)
+                            // Uygulamayı arka plandan durdur (force-stop).
+                            Button {
+                                actions.command("forceStop:\(app.packageName)")
+                            } label: {
+                                Image(systemName: "stop.fill").font(.system(size: 11))
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 35, height: 35)
+                            .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8))
+                            .strokePanel(8)
                         }
                         .frame(height: 49)
                         if app.id != filteredApps.last?.id {
@@ -549,6 +589,15 @@ struct TrebleDroidPixelDashboard: View {
             .frame(maxWidth: .infinity).frame(height: 51)
             .background(Palette.raised, in: RoundedRectangle(cornerRadius: 9))
             .overlay(RoundedRectangle(cornerRadius: 9).stroke(Palette.outline))
+        }.buttonStyle(.plain)
+    }
+    /// Medya kontrolü — küçük kare düğme.
+    private func mediaButton(_ symbol: String, _ action: String) -> some View {
+        Button { actions.command("media:\(action)") } label: {
+            Image(systemName: symbol).font(.system(size: 14, weight: .medium))
+                .frame(maxWidth: .infinity).frame(height: 36)
+                .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Palette.outline))
         }.buttonStyle(.plain)
     }
 }

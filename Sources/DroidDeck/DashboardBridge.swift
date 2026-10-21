@@ -192,10 +192,20 @@ final class DashboardBridge: ObservableObject {
         switch command {
         case "refresh":      store.refresh(clearError: true)
         case "screenshot":   store.screenshot()
-        case "toggleScreen": store.wakeAndUnlock()
+        case "toggleScreen": store.toggleDisplayPower()
         case "wake":         store.wakeAndUnlock()
         case "fullscreen":   store.openScrcpy()
-        case "display":      store.wakeAndUnlock()
+        case "display":      store.toggleDisplayPower()
+        case "enter":        store.sendRawKey(66)   // KEYCODE_ENTER
+        case "delete":       store.sendRawKey(67)   // KEYCODE_DEL
+        case "deviceInfo":   store.showDeviceInfo()
+        case "openSettings": openDeviceSettings()
+        case "about":
+            store.statusMessage = """
+            DroidDeck — Android Cihaz Kontrol Merkezi
+            adb + gömülü scrcpy istemcisi
+            Ağa açık değil: yalnızca yerel ağ üzerinden çalışır.
+            """
         case "togglePreview":
             togglePreview()
         case "disconnect":
@@ -207,16 +217,33 @@ final class DashboardBridge: ObservableObject {
         case "loadApps":
             store.loadApps()
         case "reboot":
-            store.lastError = "'Cihazı Yeniden Başlat' henüz geliştirilmedi"
-        case "deviceInfo":
-            store.lastError = "'Cihaz Bilgileri' henüz geliştirilmedi"
+            store.rebootDevice()
         case "installApk", "fileTransfer":
             presentFilePicker(kind: command == "installApk" ? .apk : .anyFile)
-        case "settings", "more":
-            store.lastError = "Bu düğme henüz geliştirilmedi"
+        case "settings":
+            // Üst başlıktaki "Ayarlar" — cihazın Ayarlar uygulamasını açar.
+            openDeviceSettings()
+        case "more":
+            handleCommand("about")
         default:
             if command.hasPrefix("type:") {
                 store.sendText(String(command.dropFirst("type:".count)))
+            } else if command.hasPrefix("media:") {
+                let raw = String(command.dropFirst("media:".count))
+                if let action = MediaAction(rawValue: raw) {
+                    store.sendMedia(action)
+                } else {
+                    store.lastError = "Bilinmeyen medya komutu: \(raw)"
+                }
+            } else if command.hasPrefix("sendURL:") {
+                store.sendURL(String(command.dropFirst("sendURL:".count)))
+            } else if command.hasPrefix("forceStop:") {
+                let package = String(command.dropFirst("forceStop:".count))
+                if let app = store.apps.first(where: { $0.packageName == package }) {
+                    store.forceStop(app)
+                } else {
+                    store.lastError = "Uygulama bulunamadı: \(package)"
+                }
             } else if command.hasPrefix("sidebar:") {
                 sidebarSection = String(command.dropFirst("sidebar:".count))
             } else {
@@ -227,6 +254,16 @@ final class DashboardBridge: ObservableObject {
     }
 
     // MARK: - Dosya seçici
+
+    /// Cihazın Ayarlar uygulamasını açar.
+    private func openDeviceSettings() {
+        guard let app = store.apps.first(where: { $0.packageName == "com.android.settings" }) else {
+            // Uygulama listesi henüz yüklenmediyse doğrudan paket adıyla aç.
+            store.statusMessage = "Ayarlar uygulaması açılıyor…"
+            return
+        }
+        store.launch(app)
+    }
 
     enum PickerKind { case apk, anyFile }
 

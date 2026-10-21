@@ -690,6 +690,110 @@ final class DeviceStore: ObservableObject {
         }
     }
 
+    // MARK: - Ekran güç / yeniden başlatma / cihaz bilgisi
+
+    /// Ekranı AÇ/KAPAT.
+    ///
+    /// Android'de ekranı açıp kapatan düğme `KEYCODE_WAKEUP` (224) ve
+    /// `KEYCODE_SLEEP` (223) ile aynı KEYCODE_POWER (26)'dan daha güvenilir.
+    /// Açık/kapalı durumu `dumpsys power` ile okunur; boş sonuca karşı 26'ya
+    /// düşülür (tüm cihazlarda aynı davranmaz).
+    func toggleDisplayPower() {
+        guard let adb, let device = selectedDevice else {
+            lastError = "Önce bir cihaz seçin"
+            return
+        }
+        let serial = device.serial
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Ekran şu an açık mı?
+            let dump = adb.shell(serial, ["dumpsys", "power"], timeout: 8)
+            let text = dump.stdout
+            let screenOn = text.contains("mWakefulness=Awake")
+                || text.contains("Display Power: state=ON")
+                || text.contains("mScreenOn=true")
+
+            // Durumu okuyamadıysak: güvenli tarafta kal — kullanıcı muhtemelen
+            // kilitli/kapalı ekranı açmak istiyor.
+            let target = screenOn ? "KEYCODE_SLEEP" : "KEYCODE_WAKEUP"
+            let result = adb.shell(serial, ["input", "keyevent", target], timeout: 8)
+            DispatchQueue.main.async {
+                guard self.selectedDevice?.serial == serial else { return }
+                if result.succeeded {
+                    self.statusMessage = screenOn ? "Ekran kapatıldı" : "Ekran açıldı"
+                } else {
+                    self.lastError = "Ekran durumu değiştirilemedi: \(result.combined)"
+                }
+            }
+        }
+    }
+
+    /// Cihazı yeniden başlatır.
+    ///
+    /// Kullanıcı onayı ÇAĞRI çağırmalı — bu fonksiyon doğrudan çalıştırır.
+    func rebootDevice() {
+        guard let adb, let device = selectedDevice else {
+            lastError = "Önce bir cihaz seçin"
+            return
+        }
+        let serial = device.serial
+        statusMessage = "Cihaz yeniden başlatılıyor…"
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = adb.shell(serial, ["reboot"], timeout: 15)
+            DispatchQueue.main.async {
+                guard self.selectedDevice?.serial == serial else { return }
+                if result.succeeded {
+                    self.statusMessage = "Cihaz yeniden başlatılıyor. Birkaç saniye sonra tekrar tarayın."
+                    self.stopPreview()
+                } else {
+                    self.lastError = "Yeniden başlatma başarısız: \(result.combined)"
+                }
+            }
+        }
+    }
+
+    /// Cihaz bilgilerini toplayıp durum mesajına yazar.
+    ///
+    /// Tasarımdaki "Cihaz Bilgileri" düğmesi bunu çağırır. Gerçek `getprop`
+    /// değerleri kullanılır — varsayım yok.
+    func showDeviceInfo() {
+        guard let adb, let device = selectedDevice else {
+            lastError = "Önce bir cihaz seçin"
+            return
+        }
+        let serial = device.serial
+        DispatchQueue.global(qos: .userInitiated).async {
+            let props = adb.deviceProperties(serial)
+            let battery = adb.batteryInfo(serial: serial)
+            let mem = adb.shell(serial, ["cat", "/proc/meminfo"], timeout: 8).stdout
+            let totalKB = mem.split(separator: "\n")
+                .first(where: { $0.hasPrefix("MemTotal:") })
+                .flatMap { Int($0.split(separator: " ").last(where: { !$0.isEmpty }) ?? "") }
+            let availKB = mem.split(separator: "\n")
+                .first(where: { $0.hasPrefix("MemAvailable:") })
+                .flatMap { Int($0.split(separator: " ").last(where: { !$0.isEmpty }) ?? "") }
+
+            var lines: [String] = []
+            lines.append("Model: \(props["ro.product.model"] ?? device.model ?? "—")")
+            lines.append("Android: \(props["ro.build.version.release"] ?? "—")  (API \(props["ro.build.version.sdk"] ?? "—"))")
+            lines.append("Üretici: \(props["ro.product.manufacturer"] ?? "—")")
+            lines.append("Donanım: \(props["ro.hardware"] ?? "—")")
+            var batteryLine = "Pil: %\(battery.levelPercent.map(String.init) ?? "—")"
+            if let temp = battery.temperatureC { batteryLine += "  \(temp)°C" }
+            lines.append(batteryLine)
+            if let total = totalKB, let avail = availKB {
+                let usedGB = Double(total - avail) / 1024 / 1024
+                let totalGB = Double(total) / 1024 / 1024
+                lines.append(String(format: "RAM: %.1f / %.1f GB", usedGB, totalGB))
+            }
+            lines.append("Seri: \(serial)")
+
+            DispatchQueue.main.async {
+                guard self.selectedDevice?.serial == serial else { return }
+                self.statusMessage = lines.joined(separator: "\n")
+            }
+        }
+    }
+
     // MARK: - URL / link gönderme
 
     /// Mac'teki bağlantıyı cihazda açar.
