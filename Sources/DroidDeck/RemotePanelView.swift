@@ -5,25 +5,35 @@ struct RemotePanelView: View {
     @EnvironmentObject private var store: DeviceStore
 
     var body: some View {
-        Group {
-            if let device = store.selectedDevice {
-                ScrollView {
-                    RemotePanelContent(device: device)
-                        .padding(20)
-                }
-                .background(Color(nsColor: .windowBackgroundColor))
-            } else {
-                ContentUnavailableView {
-                    Label("Cihaz Seçilmedi", systemImage: "tv.and.mediabox")
-                } description: {
-                    Text("Soldaki listeden bir Android cihazı seçin.\nCihaz görünmüyorsa 'Elle Bağlan' ile IP:port girin.")
-                } actions: {
-                    Button("Cihazları Tara") {
-                        store.refresh()
+        VStack(alignment: .leading, spacing: 0) {
+            // Bağlantı araçları HER DURUMDA görünür. Özellikle "bağlanamıyorum"
+            // anında erişilebilir olmalı — cihaz seçili değilken gizlenirse
+            // kurtarma aracına hiç ulaşılamaz.
+            ConnectionPanel(store: store)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+
+            Group {
+                if let device = store.selectedDevice {
+                    ScrollView {
+                        RemotePanelContent(device: device)
+                            .padding(20)
                     }
-                    .buttonStyle(.borderedProminent)
+                } else {
+                    ContentUnavailableView {
+                        Label("Cihaz Seçilmedi", systemImage: "tv.and.mediabox")
+                    } description: {
+                        Text("Soldaki listeden bir Android cihazı seçin.\nCihaz görünmüyorsa 'Elle Bağlan' ile IP:port girin.\nBağlantı takıldıysa yukarıdaki 'Bağlantıyı Onar' düğmesini kullanın.")
+                    } actions: {
+                        Button("Cihazları Tara") {
+                            store.refresh()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(nsColor: .windowBackgroundColor))
         }
         .navigationTitle(store.selectedDevice?.displayName ?? "DroidDeck")
     }
@@ -38,9 +48,6 @@ struct RemotePanelContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             Header(device: device)
-
-            // Bağlantı araçları — cihazdan bağımsız (onarım + kablosuz kurulum)
-            ConnectionPanel(store: store)
 
             // Durum panosu / canlı telemetri — yalnızca okur, cihaza yük bindirmez.
             TelemetryStrip(telemetry: store.telemetry) {
