@@ -200,27 +200,29 @@ extension ADBService {
 
     /// Kablosuz ADB'yi kullanıma hazırlar.
     ///
-    /// Sıra (cihazdan bağımsız mantık):
-    ///  1. Cihazda zaten dinleyen bir TCP portu varsa onu kullan
-    ///  2. Yoksa `adb tcpip <port>` ile klasik TCP ADB'yi aç
+    /// CİHAZDAN BAĞIMSIZ ve KESTİRİM YAPMAYAN mantık:
+    ///  1. Tercih edilen port zaten dinliyorsa onu kullan (bilinen, düz ADB)
+    ///  2. Değilse `adb tcpip <port>` ile o portu aç — bu her cihazda aynı
+    ///     davranır ve eşleştirme gerektirmez
     ///  3. IP'yi cihazdan oku (gömülü değil)
+    ///
+    /// NEDEN "ilk dinleyen port" kullanılmıyor: cihazlarda genellikle birden
+    /// çok port dinler (örn. eşleştirme gerektiren TLS portu + düz ADB portu).
+    /// İlkini seçmek yanlış portu alabilir. Deterministik olmak daha güvenli.
     func prepareWireless(serial: String, preferredPort: Int = 5555) -> WirelessSetupResult {
         guard let ip = primaryIPv4(serial: serial) else {
             return .noWiFi
         }
+        let endpoint = "\(ip):\(preferredPort)"
 
-        // 1) Zaten dinleyen bir port var mı? (örn. kablosuz hata ayıklama açık)
+        // 1) Tercih edilen port zaten dinliyor mu?
         let listening = listeningTCPPorts(serial: serial)
-        if let existing = listening.first(where: { $0 != 5555 || true }) {
-            let endpoint = "\(ip):\(existing)"
-            // Gerçekten dinliyor mu, hızlıca doğrula
-            if shell(serial, ["sh", "-c", Shell.quote("ss -tln 2>/dev/null | grep -q ':\(existing) ' && echo yes")], timeout: 8)
-                .stdout.contains("yes") {
-                return .ready(endpoint: endpoint, method: "cihaz kendi portunu yayınlayor")
-            }
+        if listening.contains(preferredPort) {
+            return .ready(endpoint: endpoint,
+                          method: "port \(preferredPort) zaten açık")
         }
 
-        // 2) Klasik TCP ADB'yi aç
+        // 2) Klasik TCP ADB'yi o portta aç
         let en = adb(["-s", serial, "tcpip", "\(preferredPort)"], timeout: 20)
         guard en.succeeded || en.stdout.contains("restarting in TCP mode") else {
             return .failed(en.combined)
@@ -229,7 +231,6 @@ extension ADBService {
         // adbd yeniden başlar; portun açılması için kısa bekleme.
         usleep(1_500_000)
 
-        let endpoint = "\(ip):\(preferredPort)"
         return .enabled(endpoint: endpoint, method: "adb tcpip \(preferredPort)")
     }
 }

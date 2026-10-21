@@ -39,6 +39,9 @@ struct RemotePanelContent: View {
         VStack(alignment: .leading, spacing: 18) {
             Header(device: device)
 
+            // Bağlantı araçları — cihazdan bağımsız (onarım + kablosuz kurulum)
+            ConnectionPanel(store: store)
+
             // Durum panosu / canlı telemetri — yalnızca okur, cihaza yük bindirmez.
             TelemetryStrip(telemetry: store.telemetry) {
                 store.refreshTelemetry()

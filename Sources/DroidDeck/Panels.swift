@@ -178,6 +178,42 @@ struct TransferStatusView: View {
     }
 }
 
+// MARK: - Bağlantı: onarım + kablosuz kurulum
+
+/// Cihazdan bağımsız bağlantı araçları. Burada hiçbir cihaza özel bilgi yoktur.
+struct ConnectionPanel: View {
+    @ObservedObject var store: DeviceStore
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button {
+                store.recoverConnection()
+            } label: {
+                Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
+            }
+            .controlSize(.small)
+            .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
+
+            Button {
+                store.enableWireless()
+            } label: {
+                Label("Kablosuza Geç", systemImage: "wifi")
+            }
+            .controlSize(.small)
+            .disabled(store.selectedDevice == nil)
+            .help("Cihazın IP/portunu kendisi bulup kablosuz bağlantıyı kurar")
+
+            if !store.wirelessStatus.isEmpty {
+                Text(store.wirelessStatus)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .textSelection(.enabled)
+            }
+        }
+    }
+}
+
 // MARK: - Dosya bırakma hedefi
 
 /// Pencerenin herhangi bir yerine dosya bırakılmasını kabul eder.
