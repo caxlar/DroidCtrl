@@ -142,7 +142,10 @@ struct ADBService {
     /// Connection refused", EXIT:0.) Exit koduna dayanmak "Bağlandı" yalanını
     /// üretir: kullanıcı bağlandığını görür ama komutlar hiç gitmez.
     func connectVerified(to endpoint: String) -> (ok: Bool, message: String) {
-        let r = adb(["connect", endpoint], timeout: 15)
+        // `resilientADB`: geçici hata görünürse adb sunucusunu yeniden başlatıp
+        // TEK kez yeniden dener. (Eskiden bu fonksiyon hiç çağrılmıyordu —
+        // dayanıklılık katmanı ölü koddu.)
+        let r = resilientADB(["connect", endpoint], timeout: 15)
         let text = (r.stdout + "\n" + r.stderr)
         let lower = text.lowercased()
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -160,7 +163,9 @@ struct ADBService {
     /// ayrılır — aksi halde geçici bir kesinti "cihaz yok" diye yorumlanıp
     /// kullanıcının oturumu (seçim, önizleme) silinir.
     func listDevicesChecked() -> (devices: [AndroidDevice], ok: Bool) {
-        let r = adb(["devices", "-l"], timeout: 15)
+        // `resilientADB`: bayat sunucuda tarama boş dönerdi. Geçici hatada
+        // tek kez yeniden denenir.
+        let r = resilientADB(["devices", "-l"], timeout: 15)
         // Zaman aşımı veya hatalı sonuç = liste GEÇERSİZ, boş DEĞİL.
         guard r.succeeded else { return ([], false) }
         return (Self.parseDevices(r.stdout), true)

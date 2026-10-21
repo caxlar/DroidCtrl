@@ -356,7 +356,7 @@ final class ScrcpyClient {
         running = true
         isRunning = true
 
-        // 7) Okuma iş parçacığı.
+        // 7) Okuma iş parçacıkları.
         let thread = Thread { [weak self] in
             self?.readLoop()
         }
@@ -364,6 +364,37 @@ final class ScrcpyClient {
         thread.qualityOfService = .userInitiated
         readerThread = thread
         thread.start()
+
+        // KONTROL SOKETİ de tahliye edilmeli. Hiç okunmazsa cihaz tarafındaki
+        // gönderici TCP penceresi dolunca bloke olur; clipboard/ack mesajları
+        // birikir ve uzun oturumlarda akış tıkanır.
+        let controlThread = Thread { [weak self] in
+            self?.controlReadLoop()
+        }
+        controlThread.name = "scrcpy.control"
+        controlThread.qualityOfService = .utility
+        controlThread.start()
+    }
+
+    /// Kontrol soketini tahliye eder.
+    ///
+    /// Mesajlar şimdilik yalnızca okunup atılıyor — amaç tıkanmayı önlemek.
+    /// İleride clipboard senkronu / cihaz yanıtları buradan işlenebilir.
+    private func controlReadLoop() {
+        fdLock.lock()
+        let fd = controlFD >= 0 ? dup(controlFD) : -1
+        fdLock.unlock()
+        guard fd >= 0 else { return }
+        defer { close(fd) }
+
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while running {
+            let n = buffer.withUnsafeMutableBufferPointer { buf -> Int in
+                guard let base = buf.baseAddress else { return -1 }
+                return Darwin.read(fd, base, buf.count)
+            }
+            if n <= 0 { return }   // EOF veya hata — döngüden çık
+        }
     }
 
     private func connectWithRetry(port: Int, attempts: Int, delayMS: Int) throws -> Int32 {
@@ -910,9 +941,18 @@ final class ScrcpyClient {
         // Kendi kurduğumuz `adb forward` kaydını da kaldır. Bunu yapmazsak
         // her oturum geride ölü bir yönlendirme bırakır ve sonraki oturumlar
         // yanlış porta bağlanır (siyah ekran / takılma).
+        //
+        // SERİ KUYRUĞA alınır ve ASYNKRON'dur: `stop()` ana iş parçacığından
+        // çağrılır; adb takılırsa arayüz 60 sn'ye kadar beachball olurdu.
+        // Kuyruk sıralaması sayesinde sonraki sunucu başlatma yine de bunu bekler.
         if boundForwardPort > 0, let adbPath, let serial {
-            _ = run(adbPath, ["-s", serial, "forward", "--remove", "tcp:\(boundForwardPort)"])
+            let port = boundForwardPort
             boundForwardPort = 0
+            Self.serverOpsQueue.async {
+                _ = ProcessRunner.run(adbPath,
+                                      arguments: ["-s", serial, "forward", "--remove", "tcp:\(port)"],
+                                      timeout: 15)
+            }
         }
 
         // Süreç nesnesi de okuyucu/ana iş parçacıkları arasında paylaşılır.
