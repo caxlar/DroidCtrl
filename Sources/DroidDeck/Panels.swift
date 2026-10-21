@@ -178,25 +178,6 @@ struct TransferStatusView: View {
     }
 }
 
-// MARK: - Bağlantı: onarım + kablosuz kurulum
-
-/// Cihazdan bağımsız bağlantı araçları. Burada hiçbir cihaza özel bilgi yoktur.
-struct ConnectionPanel: View {
-    @ObservedObject var store: DeviceStore
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Button {
-                store.recoverConnection()
-            } label: {
-                Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
-            }
-            .controlSize(.small)
-            .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
-        }
-    }
-}
-
 // MARK: - Dosya bırakma hedefi
 
 /// Pencerenin herhangi bir yerine dosya bırakılmasını kabul eder.

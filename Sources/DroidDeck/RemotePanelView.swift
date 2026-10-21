@@ -5,35 +5,34 @@ struct RemotePanelView: View {
     @EnvironmentObject private var store: DeviceStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Bağlantı araçları HER DURUMDA görünür. Özellikle "bağlanamıyorum"
-            // anında erişilebilir olmalı — cihaz seçili değilken gizlenirse
-            // kurtarma aracına hiç ulaşılamaz.
-            ConnectionPanel(store: store)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-
-            Group {
-                if let device = store.selectedDevice {
-                    ScrollView {
-                        RemotePanelContent(device: device)
-                            .padding(20)
-                    }
-                } else {
-                    ContentUnavailableView {
-                        Label("Cihaz Seçilmedi", systemImage: "tv.and.mediabox")
-                    } description: {
-                        Text("Soldaki listeden bir Android cihazı seçin.\nCihaz görünmüyorsa 'Elle Bağlan' ile IP:port girin.\nBağlantı takıldıysa yukarıdaki 'Bağlantıyı Onar' düğmesini kullanın.")
-                    } actions: {
+        Group {
+            if let device = store.selectedDevice {
+                ScrollView {
+                    RemotePanelContent(device: device)
+                        .padding(20)
+                }
+                .background(Color(nsColor: .windowBackgroundColor))
+            } else {
+                ContentUnavailableView {
+                    Label("Cihaz Seçilmedi", systemImage: "tv.and.mediabox")
+                } description: {
+                    Text("Soldaki listeden bir Android cihazı seçin.\nCihaz görünmüyorsa 'Elle Bağlan' ile IP:port girin.\nBağlantı takıldıysa 'Bağlantıyı Onar' ile adb'yi yeniden başlatın.")
+                } actions: {
+                    HStack(spacing: 10) {
                         Button("Cihazları Tara") {
                             store.refresh()
                         }
                         .buttonStyle(.borderedProminent)
+
+                        Button {
+                            store.recoverConnection()
+                        } label: {
+                            Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
+                        }
+                        .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
                     }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.white)
         }
         .navigationTitle(store.selectedDevice?.displayName ?? "DroidDeck")
     }
@@ -58,6 +57,18 @@ struct RemotePanelContent: View {
                 NavigationCard()
                 PreviewCard()
                 TextCard()
+            }
+
+            // Bağlantı onarımı: cihaz seçiliyken Header'da küçük ve yerinde.
+            HStack {
+                Spacer()
+                Button {
+                    store.recoverConnection()
+                } label: {
+                    Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .controlSize(.small)
+                .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
             }
 
             Card(title: "Hızlı Erişim", icon: "bolt") {
