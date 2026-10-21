@@ -150,7 +150,7 @@ enum WirelessSetupResult: Equatable {
         switch self {
         case .ready(_, let m): return "Kablosuz bağlantı hazır (\(m))"
         case .enabled(_, let m): return "Kablosuz bağlantı açıldı (\(m))"
-        case .noWiFi: return "Cihazda WiFi görünmüyor — önce WiFi'ye bağlayın"
+        case .noWiFi: return "Cihaz yanıt veriyor ama WiFi görünmüyor — cihazı WiFi ağına bağlayın"
         case .failed(let why): return "Kablosuz bağlantı kurulamadı: \(why)"
         }
     }
@@ -201,15 +201,19 @@ extension ADBService {
     /// Kablosuz ADB'yi kullanıma hazırlar.
     ///
     /// CİHAZDAN BAĞIMSIZ ve KESTİRİM YAPMAYAN mantık:
+    ///  0. Cihaz gerçekten erişilebilir mi? (önce bunu doğrula — değilse sebep
+    ///     bu olmalıdır, "WiFi yok" DEĞİL. Kullanıcıyı yanıltan mesaj kötüdür.)
     ///  1. Tercih edilen port zaten dinliyorsa onu kullan (bilinen, düz ADB)
-    ///  2. Değilse `adb tcpip <port>` ile o portu aç — bu her cihazda aynı
-    ///     davranır ve eşleştirme gerektirmez
+    ///  2. Değilse `adb tcpip <port>` ile o portu aç
     ///  3. IP'yi cihazdan oku (gömülü değil)
-    ///
-    /// NEDEN "ilk dinleyen port" kullanılmıyor: cihazlarda genellikle birden
-    /// çok port dinler (örn. eşleştirme gerektiren TLS portu + düz ADB portu).
-    /// İlkini seçmek yanlış portu alabilir. Deterministik olmak daha güvenli.
     func prepareWireless(serial: String, preferredPort: Int = 5555) -> WirelessSetupResult {
+        // 0) Erişilebilirlik — en sık yanlış teşhis buradan geliyor: cihaz
+        //    çevrimdışıyken "WiFi yok" denmesi kullanıcıyı yanlış yönlendirir.
+        let alive = shell(serial, ["echo", "ok"], timeout: 8)
+        guard alive.stdout.contains("ok") else {
+            return .failed("cihaza ulaşılamıyor — bağlantı kopmuş olabilir. Önce 'Bağlantıyı Onar' deneyin.")
+        }
+
         guard let ip = primaryIPv4(serial: serial) else {
             return .noWiFi
         }
