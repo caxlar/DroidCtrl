@@ -441,17 +441,26 @@ final class DeviceStore: ObservableObject {
                 DispatchQueue.global(qos: .userInitiated).async {
                     let services = adb.listMDNSServices()
                     let connectService = services.first { $0.isSecureConnect && $0.host == host }
-                    let target = connectService?.endpoint ?? "\(host):5555"
-                    let connectResult = adb.connect(to: target)
 
                     DispatchQueue.main.async {
                         self.isPairingBusy = false
                         self.pairingFinished = true
                         self.stopPairingWatch()
-                        if connectResult.succeeded {
+
+                        // PORT TAHMİNİ YAPMA. Kablosuz hata ayıklamada bağlantı
+                        // portu RASTGELE atanır; 5555 yalnızca eski `adb tcpip`
+                        // içindir. Tahmin edip "bağlanamadı" demek yerine,
+                        // portu bilmiyorsak bunu açıkça söyleyelim.
+                        guard let target = connectService?.endpoint else {
+                            self.pairingStatus = "Eşleşme başarılı. Ama bağlantı portu ağda duyurulmadı — soldaki 'Elle Bağlan' ile IP:port girin."
+                            return
+                        }
+
+                        let connectResult = adb.connectVerified(to: target)
+                        if connectResult.ok {
                             self.pairingStatus = "Bağlandı: \(target). Cihaz listede hazır."
                         } else {
-                            self.pairingStatus = "Eşleşme tamam ama bağlantı kurulamadı. Soldaki 'Bağlan' ile deneyin."
+                            self.pairingStatus = "Eşleşme tamam ama bağlantı kurulamadı: \(connectResult.message)"
                         }
                         self.refresh(selectEndpoint: target)
                     }
@@ -780,17 +789,20 @@ final class DeviceStore: ObservableObject {
     /// DroidDeck'in başlattığı harici scrcpy penceresini kapatır.
     ///
     /// NEDEN GEREKLİ: `localabstract:scrcpy` soketi cihaz başına TEK'tir.
-    /// Küçük önizleme ile büyük ekran aynı anda çalışamaz. Bizim başlattığımız
-    /// pencereyi bulmak için başlığındaki benzersiz öntanı kullanılır
-    /// ("DroidDeck · <serial>") — başka scrcpy oturumlarına dokunulmaz.
-    /// `true` dönerse gerçekten bir oturum sonlandırıldı.
+    /// Küçük önizleme ile büyük ekran aynı anda çalışamaz.
+    ///
+    /// YALNIZCA O CİHAZIN penceresi hedeflenir. Daha önce kalıp
+    /// `pkill -f "DroidDeck ·"` tüm cihazların pencerelerini kapatıyordu;
+    /// iki cihazlı kullanımda birinde önizleme başlatmak diğerinin ekranını
+    /// götürüyordu.
     @discardableResult
-    func stopExternalScrcpy() -> Bool {
-        // Yalnızca BİZİM başlattığımız pencereyi hedefle. `launchScrcpy`
-        // pencere başlığına "DroidDeck · <serial>" koyar; pkill -f bunu
-        // komut satırında arar. Başka scrcpy oturumlarına dokunulmaz.
+    func stopExternalScrcpy(for serial: String) -> Bool {
+        // `launchScrcpy` pencere başlığına "DroidDeck · <serial>" koyar.
+        // pkill -f bunu komut satırında arar — seri de desende olduğu için
+        // yalnızca o cihazın penceresi eşleşir.
+        let pattern = "DroidDeck · \(serial)"
         let probe = ProcessRunner.run("/usr/bin/pkill",
-                                      arguments: ["-f", "DroidDeck ·"], timeout: 5)
+                                      arguments: ["-f", pattern], timeout: 5)
         return probe.exitCode == 0
     }
 
@@ -846,7 +858,20 @@ final class DeviceStore: ObservableObject {
             return
         }
         send { adb, serial in
-            _ = adb.typeText(serial, trimmed)
+            // `input text`, metindeki "%s" dizisini BOŞLUĞA çevirir. Kullanıcının
+            // LITERAL "%s" yazabilmesi için parçalara bölüp ayrı gönderiyoruz:
+            // "%s" iki ayrı çağrıda "%%" ve "s" olarak gider, hiçbirinde "%s"
+            // bulunmadığı için dönüşümez.
+            let pieces = trimmed.components(separatedBy: "%s")
+            for (index, piece) in pieces.enumerated() {
+                if index > 0 {
+                    _ = adb.typeText(serial, "%")
+                    _ = adb.typeText(serial, "s")
+                }
+                if !piece.isEmpty {
+                    _ = adb.typeText(serial, piece)
+                }
+            }
         }
     }
 
@@ -871,8 +896,36 @@ final class DeviceStore: ObservableObject {
         let serial = device.serial
         DispatchQueue.global(qos: .userInitiated).async {
             work(adb, serial)
+
+            // Komutların sonucu bu yolda YUTULUYOR (çok sayıda çağrıcı var ve
+            // hepsi `discardable`). Bu yüzden periyodik olarak cihazın gerçekten
+            // yanıt verip vermediğini kontrol ediyoruz: transport ölüyse kullanıcı
+            // "tuşa basıyorum ama hiçbir şey olmuyor" yerine gerçek nedeni görsün.
+            let shouldProbe: Bool = MainActor.assumeIsolated {
+                self.sendCount += 1
+                return self.sendCount % 5 == 0
+            }
+            guard shouldProbe else { return }
+
+            let alive = adb.shell(serial, ["echo", "ok"], timeout: 6)
+            let ok = alive.stdout.contains("ok")
+            DispatchQueue.main.async {
+                if ok {
+                    self.sendFailures = 0
+                    return
+                }
+                self.sendFailures += 1
+                guard self.sendFailures >= 2 else { return }
+                self.sendFailures = 0
+                self.lastError = "Komutlar cihaza ulaşmıyor — bağlantı kopmuş olabilir"
+                self.attemptRecovery()
+            }
         }
     }
+
+    /// Komut sayaçları — ölü transportu sessizce fark etmemek için.
+    private var sendCount = 0
+    private var sendFailures = 0
 
     // MARK: - Ekran
 
@@ -889,7 +942,7 @@ final class DeviceStore: ObservableObject {
         // (`localabstract:scrcpy` soketi tek). Daha önce büyük ekranı açtıysan,
         // küçük önizlemeyi başlatmak onu sonlandırır. Bunu sessizce yapmak
         // yerine kullanıcıya söylüyoruz.
-        if stopExternalScrcpy() {
+        if stopExternalScrcpy(for: device.serial) {
             previewStatus = "Büyük ekran kapatıldı — küçük önizleme başlatılıyor"
         }
 

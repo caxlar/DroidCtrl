@@ -11,6 +11,14 @@ struct CommandResult {
     var succeeded: Bool { exitCode == 0 && !timedOut }
     /// Hangi çıktının dolu olduğuna göre tek bir metin döndürür.
     var combined: String {
+        // ZAMAN AŞIMINDA stdout PARÇALI olabilir. Eskiden stdout tercih
+        // ediliyordu; bu, gerçek hata mesajını gizleyip yarım çıktı gösteriyordu.
+        if timedOut {
+            let out = stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+            let err = stderr.trimmingCharacters(in: .whitespacesAndNewlines)
+            return "Zaman aşımı" + (err.isEmpty ? "" : " — \(err)")
+                + (out.isEmpty ? "" : "\nKısmi çıktı: \(out)")
+        }
         let out = stdout.trimmingCharacters(in: .whitespacesAndNewlines)
         if !out.isEmpty { return stdout }
         return stderr

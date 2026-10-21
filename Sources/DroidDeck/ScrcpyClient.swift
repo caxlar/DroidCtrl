@@ -91,7 +91,6 @@ final class ScrcpyClient {
     private var serverProcess: Process?
     private var readerThread: Thread?
     private let writeLock = NSLock()
-    private var running = false
     private var serverLogBox: LogBox?
     /// Sunucu sürecinin ham çıktısı (tanılama için).
     var serverOutput: String { serverLogBox?.text ?? "" }
@@ -110,13 +109,35 @@ final class ScrcpyClient {
     /// eşzamanlı okuma-yazma CF referans sayacı yarışıdır ve durdurma anında
     /// crash'e yol açabilir.
     private let stateLock = NSLock()
+
+    /// Paylaşılan duruma erişimi serileştirir.
+    private func stateSync<T>(_ body: () -> T) -> T {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        return body()
+    }
+
     /// `stop()` çağrıldığında kurulur; devam eden `boot()`'u durdurur.
     /// Aksi halde kullanıcı durdurmuşken başlatma tamamlanır ve cihazda
     /// yetim bir encoder kalır.
-    private var cancelled = false
+    private var _cancelled = false
+    private var _running = false
     /// Kontrol akışının senkronu bozulduğunda (kısmi yazım) kurulur.
     /// Sonraki mesajlar gönderilmez — sahte tuş/dokunma yorumlamasını önler.
-    private var controlBroken = false
+    private var _controlBroken = false
+
+    private var cancelled: Bool {
+        get { stateSync { _cancelled } }
+        set { stateSync { _cancelled = newValue } }
+    }
+    private var running: Bool {
+        get { stateSync { _running } }
+        set { stateSync { _running = newValue } }
+    }
+    private var controlBroken: Bool {
+        get { stateSync { _controlBroken } }
+        set { stateSync { _controlBroken = newValue } }
+    }
 
     private var formatDesc: CMVideoFormatDescription?
     private let decoder = VideoDecoder()
@@ -176,6 +197,7 @@ final class ScrcpyClient {
         boundSerial = serial
         cancelled = false
         controlBroken = false
+        teardownStarted = false
 
         guard FileManager.default.fileExists(atPath: serverLocalPath) else {
             throw BootError.serverMissing(serverLocalPath)
@@ -258,7 +280,12 @@ final class ScrcpyClient {
         // Sunucu `localabstract:scrcpy` soketini açana kadar bekle.
         // `adb forward` yerel connect()i optimistçe kabul eder; soket hazır
         // değilse adb bağlantıyı kapatır ve okuma anında EOF alır.
-        usleep(2_000_000)
+        // Sunucunun `localabstract:scrcpy` soketini açmasını BEKLEMEK için
+        // koşulsuz 2 sn uyumak gereksizdi: aşağıdaki `connectWithRetry` zaten
+        // 40×150ms deneme yapıyor. Uyku yalnızca sürecin gerçekten başlaması
+        // için kısa bir pay bırakır — ilk kareye kadar geçen süreyi ~2 sn
+        // kısaltır.
+        usleep(300_000)
 
         // Sunucu çıktısını arka planda topla (tanılama için).
         let logBox = LogBox()
@@ -844,7 +871,20 @@ final class ScrcpyClient {
     ///
     /// Başarısız başlatmalarda da çağrılmalıdır: aksi halde `scrcpy-server`
     /// cihazda kalmaya devam eder ve ekranı boş yere kodlar (pil/ısınma yükü).
+    ///
+    /// Tek-seferliktir: `teardown` stop/finish/boot-hata gibi birden fazla
+    /// yoldan çağrılabilir. İki iş parçacığı aynı anda girerse `boundForwardPort`
+    /// yarışı olur ve iki kez `forward --remove`/`pkill` gider.
+    private var teardownStarted = false
+
     private func teardown(adbPath: String?, serial: String?) {
+        let shouldRun: Bool = stateSync {
+            if teardownStarted { return false }
+            teardownStarted = true
+            return true
+        }
+        guard shouldRun else { return }
+
         // 1) shutdown() KİLİT ALMADAN. readExact()/send() fdLock'u tutup syscall'da
         //    bloke olmuş olabilir; kilit altında shutdown çağırırsak kilit hiç
         //    bırakılmazdı (deadlock). shutdown bloke okumayı anında bitirir.
