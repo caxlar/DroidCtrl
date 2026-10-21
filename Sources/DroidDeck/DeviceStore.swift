@@ -123,6 +123,17 @@ final class DeviceStore: ObservableObject {
 
     // MARK: - Keşif
 
+    /// Tarama nesli. Geç gelen ESKİ tarama sonucunun yeni sonucu ezmesini
+    /// önler: kötü ağda `adb devices` 12 sn sürebilir, kullanıcı o arada
+    /// "Yenile"ye basıp cihazı görebilir; sonra eski tarama boş sonuçla dönüp
+    /// listeyi ve seçimi silmesin diye jeton kontrol edilir.
+    private var scanGeneration = 0
+
+    /// Kaç kez otomatik kurtarma denendi. Sınırsız değil — kendi kendini
+    /// sonsuz döngüye sokan kurtarma, sorunu çözmez kalıcılaştırır.
+    private var recoveryAttempts = 0
+    private let maxRecoveryAttempts = 3
+
     func refresh(selectEndpoint: String? = nil, clearError: Bool = true) {
         guard let adb else {
             lastError = "adb bulunamadı. Kurulum: brew install --cask android-platform-tools"
@@ -133,14 +144,30 @@ final class DeviceStore: ObservableObject {
         statusMessage = "Cihazlar taranıyor…"
         if clearError { lastError = nil }
 
+        scanGeneration += 1
+        let token = scanGeneration
+
         DispatchQueue.global(qos: .userInitiated).async {
-            let foundDevices = adb.listDevices()
+            let scanned = adb.listDevicesChecked()
             let foundServices = adb.listMDNSServices()
 
             DispatchQueue.main.async {
+                // Yalnızca EN SON taramanın sonucu uygulanabilir.
+                guard token == self.scanGeneration else { return }
+                self.isScanning = false
+
+                // BAŞARISIZ tarama listeyi temizlememeli. Zaman aşımı veya
+                // geçici kesinti "cihaz yok" diye yorumlanırsa kullanıcının
+                // seçimi, önizlemesi ve uygulama listesi silinirdi.
+                guard scanned.ok else {
+                    self.statusMessage = "Tarama başarısız — bağlantı geçici olarak kesik olabilir"
+                    self.attemptRecovery()
+                    return
+                }
+
+                let foundDevices = scanned.devices
                 self.devices = foundDevices
                 self.mdnsServices = foundServices
-                self.isScanning = false
 
                 if let selected = self.selectedDeviceID,
                    !foundDevices.contains(where: { $0.id == selected }) {
@@ -169,18 +196,57 @@ final class DeviceStore: ObservableObject {
                     self.statusMessage = "\(controllable) cihaz hazır · \(foundDevices.count) kayıt"
                 }
 
-                // Hiç cihaz yoksa sorun ÇOĞU ZAMAN cihazda değil, yerel adb
-                // sunucusunun bayat durumundadır. Tek kez kendini kurtarmayı
-                // dener — kullanıcı bunu bilmek zorunda kalmasın. (Hız sınırlı.)
-                if foundDevices.isEmpty {
-                    DispatchQueue.global(qos: .utility).async {
-                        guard AdbMaintenance.shouldRestart() else { return }
-                        AdbMaintenance.restartIfNeeded()
-                        sleep(1)
-                        DispatchQueue.main.async { self.refresh() }
-                    }
+                // Başarılı tarama = kurtarma sayacını sıfırla.
+                if !foundDevices.isEmpty {
+                    self.recoveryAttempts = 0
+                } else {
+                    // Hem cihaz hem servis yoksa bir şey ters gitmiş olabilir.
+                    self.attemptRecovery()
                 }
             }
+        }
+    }
+
+    /// Bağlantı kurtarma — SINIRLI ve kendi kendini yıkmayan.
+    ///
+    /// ÖĞRENİLEN DERS: eskiden `foundDevices.isEmpty` görünce koşulsuz
+    /// `kill-server` yapılıyordu. Bu, (a) o sırada çalışan tüm bağlantıları ve
+    /// yönlendirmeleri düşürüyor, (b) sunucunun bellekteki kablosuz uç nokta
+    /// listesini siliyor, (c) listeyi tekrar boş bırakıp döngüyü besliyordu.
+    /// Yani "cihaz listesi anlık boşalıyor" belirtisinin kaynağı uygulamanın
+    /// kendi kurtarma mekanizmasıydı.
+    ///
+    /// Şimdi: deneme sayısı sınırlı, kill-server ÖNCESİ bilinen uç noktalar
+    /// hatırlanıp sonra geri bağlanıyor, sonuç kullanıcıya söyleniyor.
+    private func attemptRecovery() {
+        guard AdbMaintenance.shouldRestart() else { return }
+
+        guard recoveryAttempts < maxRecoveryAttempts else {
+            statusMessage = "Bağlantı kurulamadı — 'Bağlantıyı Onar' ile kendiniz deneyebilirsiniz"
+            return
+        }
+        recoveryAttempts += 1
+
+        // kill-server, sunucunun bellekteki kablosuz bağlantı listesini siler.
+        // Onları ÖNCE hatırlayıp SONRA geri bağlamazsak liste boş kalır ve
+        // kurtarma mekanizması durumu kalıcılaştırır.
+        let knownEndpoints = devices
+            .map { $0.serial }
+            .filter { $0.contains(":") && !$0.hasPrefix("emulator-") }
+
+        statusMessage = "Bağlantı onarılıyor… (deneme \(recoveryAttempts)/\(maxRecoveryAttempts))"
+
+        let service = self.adb
+        DispatchQueue.global(qos: .utility).async {
+            AdbMaintenance.restartIfNeeded()
+            usleep(800_000)
+
+            if let service {
+                for endpoint in knownEndpoints {
+                    _ = service.connect(to: endpoint)
+                }
+            }
+            DispatchQueue.main.async { self.refresh() }
         }
     }
 
@@ -191,13 +257,15 @@ final class DeviceStore: ObservableObject {
 
         statusMessage = "Bağlanılıyor: \(target)…"
         DispatchQueue.global(qos: .userInitiated).async {
-            let result = adb.connect(to: target)
+            // ÇIKTIDAN doğrula — `adb connect` başarısız olsa bile exit 0 döner.
+            let result = adb.connectVerified(to: target)
             DispatchQueue.main.async {
-                if result.succeeded {
+                if result.ok {
                     self.statusMessage = "Bağlandı: \(target)"
+                    self.recoveryAttempts = 0
                     self.refresh(selectEndpoint: target)
                 } else {
-                    self.lastError = "Bağlanamadı: \(result.combined)"
+                    self.lastError = "Bağlanamadı: \(result.message)"
                     // Hatayı SİLME — kullanıcı neden bağlanamadığını görmeli.
                     self.refresh(clearError: false)
                 }
@@ -837,6 +905,10 @@ final class DeviceStore: ObservableObject {
         client.onPixelBuffer = { [weak self] buffer, pts in
             // VideoToolbox iş parçacığından gelir; NSView erişimi ana iş parçacığı ister.
             DispatchQueue.main.async {
+                // OTURUM KİMLİĞİ KONTROLÜ: "Yenile" veya cihaz değişiminde eski
+                // oturumun gecikmiş kareleri yeni görüntüyü eziyordu (donmuş/
+                // eski kareler geri geliyordu).
+                guard self?.previewClient === client else { return }
                 self?.videoSink?.enqueue(imageBuffer: buffer, pts: pts)
             }
         }
@@ -976,6 +1048,10 @@ final class DeviceStore: ObservableObject {
     }
 
     /// Tam ekran pencereyi (scrcpy'nin kendi penceresi) açar.
+    ///
+    /// ÖNCE küçük önizlemeyi durdurur: `localabstract:scrcpy` soketi cihaz
+    /// başına TEK'tir. Önizleme açıkken harici scrcpy sunucusu dolu sokete
+    /// bağlanamaz ve pencere hiç açılmaz/açılsa da boş kalır.
     func openScrcpy() {
         guard let adb else { return }
         lastError = nil   // yeni eylem başlıyor
@@ -986,6 +1062,12 @@ final class DeviceStore: ObservableObject {
         guard device.state.isControllable else {
             lastError = "\(device.displayName) kontrol edilebilir durumda değil."
             return
+        }
+
+        // Soket tek: önizleme açıksa onu kapatmadan harici scrcpy bağlanamaz.
+        if previewActive {
+            stopPreview()
+            statusMessage = "Önizleme kapatıldı — büyük ekran açılıyor"
         }
 
         let serial = device.serial

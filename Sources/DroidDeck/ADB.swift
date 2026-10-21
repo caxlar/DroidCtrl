@@ -135,6 +135,37 @@ struct ADBService {
         adb(["connect", endpoint], timeout: 15)
     }
 
+    /// `adb connect` sonucunu ÇIKTIDAN doğrular — exit koduna güvenmez.
+    ///
+    /// NEDEN: `adb connect` bağlantı BAŞARISIZ olsa bile **exit kodu 0** döner.
+    /// (Canlı doğrulandı: `adb connect 127.0.0.1:1` → "failed to connect…
+    /// Connection refused", EXIT:0.) Exit koduna dayanmak "Bağlandı" yalanını
+    /// üretir: kullanıcı bağlandığını görür ama komutlar hiç gitmez.
+    func connectVerified(to endpoint: String) -> (ok: Bool, message: String) {
+        let r = adb(["connect", endpoint], timeout: 15)
+        let text = (r.stdout + "\n" + r.stderr)
+        let lower = text.lowercased()
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if r.timedOut {
+            return (false, "Bağlantı zaman aşımına uğradı")
+        }
+        if lower.contains("already connected") || lower.contains("connected to") {
+            return (true, trimmed)
+        }
+        return (false, trimmed.isEmpty ? "Bağlantı kurulamadı" : trimmed)
+    }
+
+    /// Cihaz listesini okur. BAŞARISIZ tarama ile BOŞ liste birbirinden
+    /// ayrılır — aksi halde geçici bir kesinti "cihaz yok" diye yorumlanıp
+    /// kullanıcının oturumu (seçim, önizleme) silinir.
+    func listDevicesChecked() -> (devices: [AndroidDevice], ok: Bool) {
+        let r = adb(["devices", "-l"], timeout: 15)
+        // Zaman aşımı veya hatalı sonuç = liste GEÇERSİZ, boş DEĞİL.
+        guard r.succeeded else { return ([], false) }
+        return (Self.parseDevices(r.stdout), true)
+    }
+
     /// Bağlantıyı keser.
     func disconnect(_ endpoint: String) -> CommandResult {
         adb(["disconnect", endpoint], timeout: 10)

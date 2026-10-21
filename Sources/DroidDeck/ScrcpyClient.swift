@@ -298,13 +298,21 @@ final class ScrcpyClient {
                 lastBootError = nil
                 break
             } catch {
+                // ÖNEMLİ: burada TAM teardown YAPILMAZ. Tam teardown hem
+                // `adb forward` kaydını siler hem de sunucuyu öldürür — o zaman
+                // 2-4. denemeler forward'sız porta bağlanmaya çalışır ve her
+                // biri ~6 sn ECONNREFUSED ile bekler. Yani yeniden deneme hiçbir
+                // koşulda başarılı olamazdı; sadece 20+ sn sessizlik üretirdi.
+                // Sadece soketleri kapat; forward + sunucu ayakta kalsın.
                 lastBootError = error
-                teardown(adbPath: adbPath, serial: serial)
+                closeSocketsOnly()
                 if attempt < 4 { usleep(700_000) }
             }
         }
 
         if let lastBootError {
+            // Gerçekten bitti — şimdi tam temizlik.
+            teardown(adbPath: adbPath, serial: serial)
             throw lastBootError
         }
 
@@ -789,6 +797,26 @@ final class ScrcpyClient {
     }
 
     // MARK: - Durdurma
+
+    /// Yeniden deneme arasında yalnızca soketleri kapatır.
+    ///
+    /// `teardown()`'tan farkı: `adb forward` kaydına ve cihazdaki sunucuya
+    /// DOKUNMAZ. Böylece sonraki deneme aynı porta tekrar bağlanabilir.
+    private func closeSocketsOnly() {
+        if controlFD >= 0 { shutdown(controlFD, SHUT_RDWR) }
+        if videoFD >= 0 { shutdown(videoFD, SHUT_RDWR) }
+
+        fdLock.lock()
+        if controlFD >= 0 {
+            close(controlFD)
+            controlFD = -1
+        }
+        if videoFD >= 0 {
+            close(videoFD)
+            videoFD = -1
+        }
+        fdLock.unlock()
+    }
 
     /// Soketleri, süreçleri VE cihaz tarafındaki sunucuyu temizler.
     ///
