@@ -347,15 +347,10 @@ struct TrebleDroidPixelDashboard: View {
                         if let screenContent {
                             screenContent
                         } else {
-                            // SwiftPM ile derlendiğimiz için asset kataloğu yok;
-                            // PNG'yi paket kaynaklarından okuyoruz.
-                            if let preview = Self.tabletPreview {
-                                Image(nsImage: preview)
-                                    .resizable()
-                            } else {
-                                // Kaynak yoksa arka plan siyah kalır.
-                                EmptyView()
-                            }
+                            // Hazır görsel KULLANILMAZ. Ekran açık değilse
+                            // siyah kalsın — `PreviewPlaceholder` bunu zaten
+                            // `screenContent` üzerinden doldurur.
+                            Color.black
                         }
                     }
                     .aspectRatio(aspect, contentMode: .fit)

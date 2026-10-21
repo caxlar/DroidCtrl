@@ -97,10 +97,18 @@ final class DashboardBridge: ObservableObject {
         }
     }
 
-    /// Önizleme görünümü — CANLI scrcpy akışı. Hazır görsel değil.
+    /// Ekran alanı — kullanıcı isteğiyle:
+    /// - Önizleme KAPALIYSA siyah zemin + ortada büyük ▶ düğmesi (tıklayınca açılır)
+    /// - Önizleme AÇIKSA canlı scrcpy akışı
+    ///
+    /// Hazır görsel GÖSTERİLMEZ.
     var screenContent: AnyView? {
-        guard store.currentPreviewClient != nil else { return nil }
-        return AnyView(VideoSurface())
+        if store.currentPreviewClient != nil {
+            return AnyView(VideoSurface())
+        }
+        return AnyView(PreviewPlaceholder { [weak self] in
+            self?.togglePreview()
+        })
     }
 
     // MARK: - Eylemler
