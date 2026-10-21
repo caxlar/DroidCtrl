@@ -15,29 +15,26 @@ final class VideoDecoder {
     private var formatDesc: CMVideoFormatDescription?
     private var context: Context?
     private var callbackRecord: VTDecompressionOutputCallbackRecord?
-    /// `session` / `formatDesc` / `onFrame` erişimini korur: `decode()`
-    /// okuyucu iş parçacığından, `invalidate()` ana iş parçacığından çağrılır.
-    /// Reküransiyel: DecodeFrame senkron callback verirse `onFrame` aynı
-    /// iş parçacığından kilidi tekrar ister.
-    private let lock = NSRecursiveLock()
+    /// `session` / `formatDesc` erişimini serileştirir.
+    ///
+    /// NEDEN KUYRUK ve NEDEN KİLİT DEĞİL: `VTDecompressionSessionDecodeFrame`
+    /// bloklayıcı olabilir. Onu bir kilitin içinde çağırmak, `invalidate()`'ın
+    /// aynı kilidi beklemesiyle **kilitlenmeye** yol açar (bizzat yaşandı:
+    /// önizleme hiç başlamıyordu). Seri kuyruk aynı işi yapar ama kilit
+    /// sırası/tutma süresi yüzünden takılmaz.
+    ///
+    /// GÜVENLİK KURALI: bu kuyruğun içindeyken `onFrame`'e erişilmez (callback
+    /// senkron çalışırsa kendine dispatch_sync yapmak yine kilitlenme olur).
+    /// Bu yüzden `onFrame` AYRI ve salt-okunur tutulur.
+    private let syncQueue = DispatchQueue(label: "droiddeck.decoder.sync")
 
     /// Çözülmüş her kare için çağrılır (VideoToolbox iş parçacığında).
-    var onFrame: ((CVImageBuffer, CMTime) -> Void)? {
-        // VideoToolbox callback iş parçacığından okunur, ana iş parçacığından
-        // yazılır. Optional closure iki kelimelik değerdir; kilitsiz
-        // okuma/yazma 'torn' değere ve crash'e yol açabilir.
-        get {
-            lock.lock()
-            defer { lock.unlock() }
-            return _onFrame
-        }
-        set {
-            lock.lock()
-            defer { lock.unlock() }
-            _onFrame = newValue
-        }
-    }
-    private var _onFrame: ((CVImageBuffer, CMTime) -> Void)?
+    ///
+    /// YALNIZCA başlatmadan önce atanmalıdır (set-once). Kilitle korumak
+    /// istenmedi: callback, `decode()`'un içindeki `DecodeFrame` çağrısıyla
+    /// aynı iş parçacığında tetiklenebilir — o zaman kuyruğa tekrar girmek
+    /// kilitlenme yaratırdı.
+    var onFrame: ((CVImageBuffer, CMTime) -> Void)?
 
     private static let callback: VTDecompressionOutputCallback = {
         refcon, _, status, _, imageBuffer, pts, _ in
@@ -82,20 +79,17 @@ final class VideoDecoder {
             print("[decoder] oturum oluşturulamadı: \(status)")
             return
         }
-        lock.lock()
-        session = newSession
-        lock.unlock()
+        syncQueue.sync { session = newSession }
     }
 
     /// Sıkışık örnek tamponunu çöz.
     ///
-    /// DecodeFrame **kilidin altında** çağrılır. Kilidi bırakıp öyle çağırmak,
-    /// `invalidate()`'ın tam o sırada aynı oturumu geçersiz kılmasına izin
-    /// verirdi — bu VideoToolbox'ta bilinen crash/tanımsız davranış kalıbıdır.
+    /// `invalidate()` ile ÇAKIŞMAZ: her ikisi de aynı seri kuyruktan geçer.
+    /// Ama kuyruğun içinde bloklayıcı çağrı yapılır ve `invalidate()` aynı
+    /// kilidi beklerse KİLİTLENME olur — bu yüzden burada kilitle değil,
+    /// seri kuyrukla serileştirme kullanılıyor.
     func decode(_ sampleBuffer: CMSampleBuffer) {
-        lock.lock()
-        defer { lock.unlock() }
-
+        syncQueue.sync {
         guard let session else { return }
         let flags: VTDecodeFrameFlags = [._EnableAsynchronousDecompression]
         let status = VTDecompressionSessionDecodeFrame(session,
@@ -106,25 +100,22 @@ final class VideoDecoder {
         if status != noErr && status != kVTVideoDecoderMalfunctionErr {
             return
         }
+        }
     }
 
     func invalidate() {
         invalidateSession()
-        lock.lock()
-        formatDesc = nil
-        lock.unlock()
+        syncQueue.sync { formatDesc = nil }
     }
 
     private func invalidateSession() {
-        // Invalidate KİLİT ALTINDA yapılır: decode() ile eşzamanlı çalışması
-        // VideoToolbox'ta bilinen crash/tanımsız davranış kalıbıdır.
-        lock.lock()
-        defer { lock.unlock() }
-
-        if let current = session {
-            VTDecompressionSessionInvalidate(current)
+        // decode() ile çakışmaması için aynı seri kuyruktan geçer.
+        syncQueue.sync {
+            if let current = session {
+                VTDecompressionSessionInvalidate(current)
+            }
+            session = nil
         }
-        session = nil
     }
 
     deinit {
