@@ -81,6 +81,9 @@ struct TrebleDroidPixelDashboard: View {
         .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: .red)
     ]
     var actions = TDVisualActions()
+    /// Önizlemenin açık olup olmadığı — düğmenin ▶/■ simgesini belirler.
+    /// Kullanıcının istediği gibi: sürekli açık kalmaz, kullanıcı açar/kapatır.
+    var previewActive: Bool = false
     /// Provide the existing stream view here. It is fitted to the selected native resolution.
     var screenContent: AnyView? = nil
 
@@ -323,6 +326,10 @@ struct TrebleDroidPixelDashboard: View {
                 Image(systemName: "ipad.landscape").foregroundStyle(Palette.textMuted)
                 Text("Cihaz Ekranı").font(.system(size: 18, weight: .bold))
                 Spacer()
+                // Önizleme açma/kapama — sürekli açık kalmaz, cihazı yormaz.
+                squareButton(previewActive ? "stop.fill" : "play.fill") {
+                    actions.command("togglePreview")
+                }
                 squareButton("minus") { zoom = max(0.5, zoom - 0.1) }
                 Text("\(Int(zoom * 100))%")
                     .fontWeight(.semibold).monospacedDigit().frame(width: 47)

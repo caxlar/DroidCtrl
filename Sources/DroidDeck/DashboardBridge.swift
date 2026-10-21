@@ -41,9 +41,10 @@ final class DashboardBridge: ObservableObject {
 
     // MARK: - Otomatik yükleme
 
-    /// Seçili cihaz değiştiğinde: uygulamaları ve canlı önizlemeyi OTOMATİK
-    /// başlat. Eskiden bunlar için ayrı düğmeler vardı; kaldırılınca uygulama
-    /// listesi boş kalmıştı.
+    /// Seçili cihaz değiştiğinde: uygulamaları OTOMATİK yükler.
+    ///
+    /// ÖNİZLEME OTOMATİK BAŞLATILMAZ. Sürekli açık encoder cihazda pil ve
+    /// ısınma yükü yaratır; kullanıcı isterse açar, işi bitince kapatır.
     func deviceSelectionChanged() {
         objectWillChange.send()
 
@@ -53,10 +54,18 @@ final class DashboardBridge: ObservableObject {
             autoLoadedForDevice = device.serial
             store.loadApps()
         }
-        if autoPreviewForDevice != device.serial {
-            autoPreviewForDevice = device.serial
+    }
+
+    /// Önizlemeyi aç/kapat. Kullanıcı çağırdığında.
+    func togglePreview() {
+        if store.previewActive {
+            store.stopPreview()
+            autoPreviewForDevice = nil
+        } else {
             store.startPreview()
+            if let device = store.selectedDevice { autoPreviewForDevice = device.serial }
         }
+        objectWillChange.send()
     }
 
     // MARK: - Veri dönüşümü
@@ -179,6 +188,8 @@ final class DashboardBridge: ObservableObject {
         case "wake":         store.wakeAndUnlock()
         case "fullscreen":   store.openScrcpy()
         case "display":      store.wakeAndUnlock()
+        case "togglePreview":
+            togglePreview()
         case "disconnect":
             if let device = store.selectedDevice {
                 store.disconnect(device)
