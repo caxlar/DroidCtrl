@@ -193,23 +193,6 @@ struct ConnectionPanel: View {
             }
             .controlSize(.small)
             .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
-
-            Button {
-                store.enableWireless()
-            } label: {
-                Label("Kablosuza Geç", systemImage: "wifi")
-            }
-            .controlSize(.small)
-            .disabled(store.selectedDevice == nil)
-            .help("Cihazın IP/portunu kendisi bulup kablosuz bağlantıyı kurar")
-
-            if !store.wirelessStatus.isEmpty {
-                Text(store.wirelessStatus)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .textSelection(.enabled)
-            }
         }
     }
 }

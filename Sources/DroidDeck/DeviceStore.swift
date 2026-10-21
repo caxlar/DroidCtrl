@@ -697,35 +697,6 @@ final class DeviceStore: ObservableObject {
         }
     }
 
-    /// Kablosuz bağlantıyı kendi kendine hazırlar — cihazdan bağımsız.
-    /// IP'yi ve portu cihazdan okur; hiçbir şey gömülü değildir.
-    @Published var wirelessStatus = ""
-
-    func enableWireless() {
-        guard let adb, let device = selectedDevice else {
-            wirelessStatus = "Önce bir cihaz seçin."
-            return
-        }
-        let serial = device.serial
-        wirelessStatus = "Hazırlanıyor…"
-        DispatchQueue.global(qos: .userInitiated).async {
-            let result = adb.prepareWireless(serial: serial)
-            var message = result.explanation
-            if let endpoint = result.endpoint {
-                message += " · \(endpoint)"
-                // Hazırlanan uç noktaya gerçekten bağlanmayı dene.
-                let r = adb.adb(["connect", endpoint], timeout: 15)
-                if r.stdout.contains("connected") || r.stdout.contains("already") {
-                    message += " · bağlandı"
-                }
-            }
-            DispatchQueue.main.async {
-                self.wirelessStatus = message
-                self.refresh()
-            }
-        }
-    }
-
     /// Kullanıcının isteğiyle bağlantı kurtarması — geneldir, hiçbir cihaza
     /// özel bilgi içermez. `adb kill-server` + `start-server` + yeniden tara.
     func recoverConnection() {
