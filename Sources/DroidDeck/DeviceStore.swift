@@ -168,6 +168,18 @@ final class DeviceStore: ObservableObject {
                 } else {
                     self.statusMessage = "\(controllable) cihaz hazır · \(foundDevices.count) kayıt"
                 }
+
+                // Hiç cihaz yoksa sorun ÇOĞU ZAMAN cihazda değil, yerel adb
+                // sunucusunun bayat durumundadır. Tek kez kendini kurtarmayı
+                // dener — kullanıcı bunu bilmek zorunda kalmasın. (Hız sınırlı.)
+                if foundDevices.isEmpty {
+                    DispatchQueue.global(qos: .utility).async {
+                        guard AdbMaintenance.shouldRestart() else { return }
+                        AdbMaintenance.restartIfNeeded()
+                        sleep(1)
+                        DispatchQueue.main.async { self.refresh() }
+                    }
+                }
             }
         }
     }
@@ -681,6 +693,20 @@ final class DeviceStore: ObservableObject {
                 self.screenshotStatus = r.succeeded
                     ? "✓ Kaydedildi: \(dest.lastPathComponent)"
                     : "✗ Ekran görüntüsü alınamadı: \(r.combined)"
+            }
+        }
+    }
+
+    /// Kullanıcının isteğiyle bağlantı kurtarması — geneldir, hiçbir cihaza
+    /// özel bilgi içermez. `adb kill-server` + `start-server` + yeniden tara.
+    func recoverConnection() {
+        statusMessage = "adb yeniden başlatılıyor…"
+        DispatchQueue.global(qos: .userInitiated).async {
+            AdbMaintenance.restartIfNeeded(force: true)
+            sleep(1)
+            DispatchQueue.main.async {
+                self.refresh()
+                self.statusMessage = "adb yeniden başlatıldı"
             }
         }
     }

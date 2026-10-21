@@ -15,6 +15,7 @@ enum Selftest {
         testParsePackages()
         testParseLaunchableApps()
         testInputTextEscaping()
+        testAdbResilience()
         testFriendlyNames()
 
         print("")
@@ -158,6 +159,35 @@ enum Selftest {
         check(Shell.escapeForInputText("a*") == "a\\*", "yıldız kaçırılır (glob)")
         check(Shell.escapeForInputText("a;b|c") == "a\\;b\\|c", "ayraçlar kaçırılır")
         check(Shell.escapeForInputText("x\ny") == "x%sy", "satır sonu %s olur")
+    }
+
+    private static func testAdbResilience() {
+        print("\n-- adb dayanıklılığı (cihazdan bağımsız) --")
+
+        func result(_ err: String) -> CommandResult {
+            CommandResult(stdout: "", stderr: err, exitCode: 1, timedOut: false)
+        }
+
+        check(isTransientADBFailure(result("error: device offline")),
+              "device offline => geçici")
+        check(isTransientADBFailure(result("failed to connect to '1.2.3.4:5555': No route to host")),
+              "No route to host => geçici")
+        check(isTransientADBFailure(result("error: closed")),
+              "closed => geçici")
+        check(!isTransientADBFailure(result("unknown command: foo")),
+              "bilinmeyen komut => geçici DEĞİL (yeniden başlatmayı hak etmez)")
+        check(!isTransientADBFailure(result("")),
+              "boş sonuç => geçici değil")
+
+        // Hız sınırı: arka arkaya restart'lar adb'yi kendisi yük yapmasın.
+        // Yalnızca karar mantığı test edilir; selftest gerçekten adb'ye dokunmaz.
+        AdbMaintenance.reset()
+        check(AdbMaintenance.shouldRestart(), "sıfırdan sonra restart serbest")
+        AdbMaintenance.markRestarted()
+        check(!AdbMaintenance.shouldRestart(),
+              "hız sınırı hemen ardından ikinci restart'ı engeller")
+        check(AdbMaintenance.shouldRestart(at: Date().addingTimeInterval(60)),
+              "sınır geçince tekrar serbest")
     }
 
     private static func testFriendlyNames() {
