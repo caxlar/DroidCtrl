@@ -34,6 +34,7 @@ struct TDVisualDevice: Identifiable {
     var nativePixelSize: CGSize
     var battery: Int = 85
     var temperature: Int? = nil
+    var name: String = ""
     var version: String = "Android 13"
 }
 struct TDVisualApp: Identifiable {
@@ -413,6 +414,9 @@ struct TrebleDroidPixelDashboard: View {
                     .frame(width: 48, height: 57)
                     .background(Palette.raised, in: RoundedRectangle(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 4) {
+                    if !device.name.isEmpty {
+                        Text(device.name).fontWeight(.semibold).lineLimit(1)
+                    }
                     Text(device.id).fontWeight(.semibold).lineLimit(1)
                     Text(device.address).font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                     HStack(spacing: 6) {
