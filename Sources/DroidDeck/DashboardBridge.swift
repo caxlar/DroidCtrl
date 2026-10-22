@@ -253,7 +253,11 @@ final class DashboardBridge: ObservableObject {
                 }
             } else if command.hasPrefix("quality:") {
                 let name = String(command.dropFirst("quality:".count))
-                store.previewQuality = (name == "Düşük") ? .low : .balanced
+                switch name {
+                case "Düşük":        store.previewQuality = .low
+                case "Yüksek (TV)":  store.previewQuality = .high
+                default:             store.previewQuality = .balanced
+                }
                 // Kalite değişince aktif oturum yeniden kurulmalı.
                 if store.previewActive {
                     store.stopPreview()

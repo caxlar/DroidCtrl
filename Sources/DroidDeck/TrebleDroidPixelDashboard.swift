@@ -315,7 +315,7 @@ struct TrebleDroidPixelDashboard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label("Önizleme Kalitesi", systemImage: "gauge.with.dots.needle.33percent")
                     .font(.system(size: 13, weight: .semibold))
-                ForEach(["Düşük", "Dengeli"], id: \.self) { quality in
+                ForEach(["Düşük", "Dengeli", "Yüksek (TV)"], id: \.self) { quality in
                     Button {
                         actions.command("quality:\(quality)")
                     } label: {
