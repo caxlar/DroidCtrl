@@ -389,7 +389,7 @@ struct TrebleDroidPixelDashboard: View {
     private var aboutPanel: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Hakkında").font(.system(size: 19, weight: .bold))
+                Text("about_title").font(.system(size: 19, weight: .bold))
                 Spacer()
             }
 
@@ -599,8 +599,8 @@ struct TrebleDroidPixelDashboard: View {
             HStack(spacing: 11) {
                 Image(systemName: "circle.grid.cross").font(.system(size: 21))
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Gezinme Kontrolleri").font(.system(size: 15, weight: .bold))
-                    Text("Cihazınızı uzaktan kontrol edin.").font(.system(size: 11)).foregroundStyle(Palette.textMuted)
+                    Text("navigation_controls").font(.system(size: 15, weight: .bold))
+                    Text("remote_control_desc").font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 }
             }.padding(.bottom, 5)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 9), count: 3), spacing: 9) {
@@ -623,7 +623,7 @@ struct TrebleDroidPixelDashboard: View {
     }
     private var keyboardView: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Klavye").font(.system(size: 16, weight: .bold))
+            Text("keyboard").font(.system(size: 16, weight: .bold))
             TextField("Metin yazın...", text: $keyboardText)
                 .textFieldStyle(.plain).padding(12)
                 .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
@@ -637,7 +637,7 @@ struct TrebleDroidPixelDashboard: View {
     }
     private var toolsView: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Araçlar").font(.system(size: 16, weight: .bold))
+            Text("tools").font(.system(size: 16, weight: .bold))
             quickAction("Cihaz Bilgileri", "info.circle", "deviceInfo")
             quickAction("Ekranı Uyandır", "sun.max", "wake")
             quickAction("Uygulamaları Yenile", "arrow.triangle.2.circlepath", "loadApps")
@@ -646,7 +646,7 @@ struct TrebleDroidPixelDashboard: View {
 
             // Medya kontrolleri — aktif medya oturumuna gider.
             VStack(alignment: .leading, spacing: 6) {
-                Text("Medya").font(.system(size: 12, weight: .semibold))
+                Text("media").font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Palette.textMuted)
                 HStack(spacing: 6) {
                     mediaButton("backward.end.alt", "previous")
@@ -660,7 +660,7 @@ struct TrebleDroidPixelDashboard: View {
 
             // URL / link gönder.
             VStack(alignment: .leading, spacing: 6) {
-                Text("Bağlantı Gönder").font(.system(size: 12, weight: .semibold))
+                Text("send_link").font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Palette.textMuted)
                 TextField("https://…", text: $urlText)
                     .textFieldStyle(.plain).font(.system(size: 11))
