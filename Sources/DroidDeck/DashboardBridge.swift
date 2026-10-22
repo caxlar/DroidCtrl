@@ -83,6 +83,7 @@ final class DashboardBridge: ObservableObject {
                     ? CGSize(width: 1280, height: 720)
                     : store.videoSize,
                 battery: store.batteryLevel ?? 0,
+                temperature: store.deviceTemperature,
                 version: device.model ?? "Android"
             )
         }

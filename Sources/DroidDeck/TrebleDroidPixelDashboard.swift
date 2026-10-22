@@ -31,6 +31,7 @@ struct TDVisualDevice: Identifiable {
     var connected: Bool
     var nativePixelSize: CGSize
     var battery: Int = 85
+    var temperature: Int? = nil
     var version: String = "Android 13"
 }
 struct TDVisualApp: Identifiable {
@@ -180,10 +181,15 @@ struct TrebleDroidPixelDashboard: View {
                 Image(systemName: "wifi").foregroundStyle(Palette.green).font(.system(size: 20))
                 Text("192.168.1.8").foregroundStyle(Palette.textMuted)
                 separator
-                Image(systemName: "battery.75percent").foregroundStyle(Palette.green)
-                Text("%\(selectedDevice?.battery ?? 0)").foregroundStyle(Palette.textMuted)
-                separator
-                Image(systemName: "app.fill").foregroundStyle(Palette.green)
+                Image(systemName: "battery.75percent").foregroundStyle(Palette.green).font(.system(size: 20))
+                                Text("%\(selectedDevice?.battery ?? 0)").foregroundStyle(Palette.textMuted)
+                                separator
+                                if let temp = selectedDevice?.temperature {
+                                    Image(systemName: "thermometer.medium").foregroundStyle(temp >= 45 ? Palette.red : (temp >= 40 ? Palette.orange : Palette.green)).font(.system(size: 18))
+                                    Text("\(temp)°C").foregroundStyle(Palette.textMuted)
+                                    separator
+                                }
+                                Image(systemName: "app.fill").foregroundStyle(Palette.green)
                 Text(selectedDevice?.version ?? "Android").foregroundStyle(Palette.textMuted)
             }
             Spacer(minLength: 4)
