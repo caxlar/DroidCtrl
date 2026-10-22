@@ -442,25 +442,25 @@ struct TrebleDroidPixelDashboard: View {
                 squareButton("plus") { zoom = min(2, zoom + 0.1) }
                 squareButton("arrow.clockwise") { actions.command("refresh") }
                 squareButton("arrow.up.left.and.arrow.down.right") { actions.command("fullscreen") }
-                // Kalite seçici — kompakt, yan yana.
-                Menu {
+                // Kalite seçici — normal butonlar, yan yana.
+                HStack(spacing: 5) {
                     ForEach(["Düşük", "Dengeli", "Yüksek (TV)"], id: \.self) { q in
                         Button {
                             actions.command("quality:\(q)")
                             currentQuality = q
                         } label: {
-                            Label(q, systemImage: q == currentQuality ? "checkmark" : "")
+                            Text(q == "Yüksek (TV)" ? "TV" : q)
+                                .font(.system(size: 10, weight: .medium))
+                                .padding(.horizontal, 8).frame(height: 28)
+                                .background(currentQuality == q ? Palette.blue : Palette.raised,
+                                          in: RoundedRectangle(cornerRadius: 6))
+                                .overlay(RoundedRectangle(cornerRadius: 6)
+                                    .stroke(currentQuality == q ? Palette.blue : Palette.outline))
+                                .foregroundStyle(currentQuality == q ? .white : Palette.textMuted)
                         }
+                        .buttonStyle(.plain)
                     }
-                } label: {
-                    Image(systemName: "gauge.with.dots.needle.33percent")
-                        .font(.system(size: 16, weight: .semibold))
-                        .frame(width: 37, height: 37)
-                        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 9))
-                        .overlay(RoundedRectangle(cornerRadius: 9).stroke(Palette.outline))
                 }
-                .menuStyle(.borderlessButton)
-                .fixedSize()
             }
             .frame(height: 37)
             GeometryReader { geometry in
