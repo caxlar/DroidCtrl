@@ -87,7 +87,7 @@ struct TrebleDroidPixelDashboard: View {
     /// Sol kenar çubuğu seçimi — hangi panelin gösterildiğini belirler.
     var sidebarSection: String = "Cihazlar"
     /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
-    var currentQuality: String = "Dengeli"
+    @State var currentQuality: String = "Dengeli"
     /// Provide the existing stream view here. It is fitted to the selected native resolution.
     var screenContent: AnyView? = nil
 
