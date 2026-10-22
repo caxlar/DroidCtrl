@@ -547,7 +547,7 @@ struct TrebleDroidPixelDashboard: View {
     }
 
     private enum ToolsTab: String, CaseIterable {
-        case navigation = "Gezinme", keyboard = "Klavye", tools = "Araçlar"
+        case navigation = "tab_navigation", keyboard = "tab_keyboard", tools = "tab_tools"
         var icon: String {
             switch self {
             case .navigation: return "circle.grid.cross"
@@ -563,7 +563,7 @@ struct TrebleDroidPixelDashboard: View {
                     Button { tab = item } label: {
                         VStack(spacing: 5) {
                             Image(systemName: item.icon).font(.system(size: 18))
-                            Text(item.rawValue).font(.system(size: 12))
+                            Text(LocalizedStringKey(item.rawValue)).font(.system(size: 12))
                         }
                         .frame(maxWidth: .infinity).frame(height: 61)
                         .background(tab == item ? Palette.blue : .clear, in: RoundedRectangle(cornerRadius: 10))
@@ -589,10 +589,10 @@ struct TrebleDroidPixelDashboard: View {
         }
     }
     private let navigationCommands: [(String, String, String)] = [
-        ("Geri", "arrow.uturn.backward", "back"), ("Ana Sayfa", "house.fill", "home"), ("Menü", "ellipsis", "menu"),
-        ("Yukarı", "chevron.up", "up"), ("Tamam", "circle.fill", "ok"), ("Aşağı", "chevron.down", "down"),
-        ("Sol", "chevron.left", "left"), ("Ayarlar", "gearshape.fill", "settings"), ("Sağ", "chevron.right", "right"),
-        ("Güç", "power", "power"), ("Bilgi", "info.circle.fill", "info"), ("Ara", "magnifyingglass", "search")
+        ("nav_back", "arrow.uturn.backward", "back"), ("nav_home", "house.fill", "home"), ("nav_menu", "ellipsis", "menu"),
+        ("nav_up", "chevron.up", "up"), ("nav_ok", "circle.fill", "ok"), ("nav_down", "chevron.down", "down"),
+        ("nav_left", "chevron.left", "left"), ("nav_settings", "gearshape.fill", "settings"), ("nav_right", "chevron.right", "right"),
+        ("nav_power", "power", "power"), ("nav_info", "info.circle.fill", "info"), ("nav_search", "magnifyingglass", "search")
     ]
     private var navigationGrid: some View {
         VStack(alignment: .leading, spacing: 9) {
@@ -609,7 +609,7 @@ struct TrebleDroidPixelDashboard: View {
                     Button { actions.navigation(item.2) } label: {
                         VStack(spacing: 7) {
                             Image(systemName: item.1).font(.system(size: 21, weight: .medium))
-                            Text(item.0).font(.system(size: 12))
+                            Text(LocalizedStringKey(item.0)).font(.system(size: 12))
                         }
                         .frame(maxWidth: .infinity).frame(height: 60)
                         .background(item.2 == "ok" ? Palette.blue.opacity(0.62) : Palette.raised,
