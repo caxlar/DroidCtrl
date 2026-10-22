@@ -1,7 +1,7 @@
 //
 //  DashboardHost.swift — DroidDeck
 //
-//  Kullanıcının yeni arayüzünü (TrebleDroidPixelDashboard) DroidDeck'in
+//  Kullanıcının yeni arayüzünü (TrebleDroidDashboard) DroidDeck'in
 //  gerçek durumu ve işlevleriyle birleştiren sarmalayıcı.
 //
 
@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Yeni arayüzün giriş görünümü.
 ///
-/// Tasarım dosyası (`TrebleDroidPixelDashboard.swift`) olduğu gibi korunur;
+/// Tasarım dosyası (`TrebleDroidDashboard.swift`) olduğu gibi korunur;
 /// yalnızca veri ve eylem bağlaması bu sarmalayıcıdan yapılır.
 ///
 /// ÖNEMLİ: Burada SAHTE bir `DeviceStore` ÜRETİLMEZ. Eskiden init içinde
@@ -20,12 +20,12 @@ struct DashboardHost: View {
     @ObservedObject var bridge: DashboardBridge
 
     var body: some View {
-        TrebleDroidPixelDashboard(
+        TrebleDroidDashboard(
             devices: bridge.visualDevices,
             apps: bridge.visualApps,
             actions: bridge.makeActions(),
             previewActive: store.previewActive,
-            sidebarSection: bridge.sidebarSection,
+            sidebarSection: $bridge.sidebarSection,
             currentQuality: store.previewQuality.rawValue,
             screenContent: bridge.screenContent
         )

@@ -19,7 +19,7 @@ private enum Palette {
     static let orange = Color(rgb: 0xFF9500)
     static let red = Color(rgb: 0xFF3B30)
 }
-private extension Color {
+extension Color {
     init(rgb: UInt32) {
         self.init(.sRGB, red: Double((rgb >> 16) & 255)/255,
                   green: Double((rgb >> 8) & 255)/255,
@@ -55,7 +55,7 @@ struct TDVisualActions {
     var command: (String) -> Void = { _ in }
 }
 
-struct TrebleDroidPixelDashboard: View {
+struct TrebleDroidDashboard: View {
     /// Önizleme görseli. SwiftPM ile derlendiğimiz için asset kataloğu yok;
     /// paket kaynaklarından (veya geliştirme sırasında proje kökünden) okunur.
     static let tabletPreview: NSImage? = {
@@ -77,19 +77,19 @@ struct TrebleDroidPixelDashboard: View {
               nativePixelSize: CGSize(width: 800, height: 1280))
     ]
     var apps: [TDVisualApp] = [
-        .init(name: "Chrome", packageName: "com.android.chrome", symbol: "globe", color: .blue),
-        .init(name: "Play Store", packageName: "com.android.vending", symbol: "play.fill", color: .green),
-        .init(name: "Kamera", packageName: "com.google.android.GoogleCamera", symbol: "camera.fill", color: .gray),
-        .init(name: "Ayarlar", packageName: "com.android.settings", symbol: "gearshape.fill", color: .blue),
-        .init(name: "YouTube", packageName: "com.google.android.youtube", symbol: "play.rectangle.fill", color: .red),
-        .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: .red)
+        .init(name: "Chrome", packageName: "com.android.chrome", symbol: "globe", color: Palette.blue),
+        .init(name: "Play Store", packageName: "com.android.vending", symbol: "play.fill", color: Palette.green),
+        .init(name: "Kamera", packageName: "com.google.android.GoogleCamera", symbol: "camera.fill", color: Palette.textMuted),
+        .init(name: "Ayarlar", packageName: "com.android.settings", symbol: "gearshape.fill", color: Palette.blue),
+        .init(name: "YouTube", packageName: "com.google.android.youtube", symbol: "play.rectangle.fill", color: Palette.red),
+        .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: Palette.red)
     ]
     var actions = TDVisualActions()
     /// Önizlemenin açık olup olmadığı — düğmenin ▶/■ simgesini belirler.
     /// Kullanıcının istediği gibi: sürekli açık kalmaz, kullanıcı açar/kapatır.
     var previewActive: Bool = false
     /// Sol kenar çubuğu seçimi — hangi panelin gösterildiğini belirler.
-    @State var sidebarSection: String = "devices"
+    @Binding var sidebarSection: String
     /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
     @State var currentQuality: String = "quality_balanced"
     /// LocalizationManager — dil değiştirme için.
@@ -124,7 +124,7 @@ struct TrebleDroidPixelDashboard: View {
                     globalSidebar
                         .frame(width: 190 * scale)
                     // Kenar çubuğu seçimi — gerçek bölüm geçişi.
-                    Group {
+Group {
                         switch sidebarSection {
                         case "settings": settingsPanel(localization: localization)
                         case "about": aboutPanel
@@ -200,7 +200,7 @@ struct TrebleDroidPixelDashboard: View {
             Spacer(minLength: 4)
             squareButton("display", size: 46) { actions.command("display") }
             squareButton("camera", size: 46) { actions.command("screenshot") }
-            squareButton("gearshape.fill", size: 46) { actions.command("sidebar:Ayarlar") }
+            squareButton("gearshape.fill", size: 46) { actions.command("sidebar:settings") }
             squareButton("ellipsis", size: 46) { actions.command("more") }
         }
         .padding(.horizontal, 32)

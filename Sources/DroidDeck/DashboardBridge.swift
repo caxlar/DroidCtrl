@@ -22,8 +22,8 @@ final class DashboardBridge: ObservableObject {
     /// Gerçek `DeviceStore`.
     var store: DeviceStore
 
-    /// Sol kenar çubuğu seçimi ("Cihazlar" / "Ayarlar" / "Hakkında").
-    @Published var sidebarSection = "Cihazlar"
+    /// Sol kenar çubuğu seçimi ("devices" / "settings" / "about").
+    @Published var sidebarSection = "devices"
     /// Son otomatik yükleme yapılan cihaz — tekrar tekrar yüklememek için.
     private var autoLoadedForDevice: String?
     /// Son otomatik önizleme başlatılan cihaz.

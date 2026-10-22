@@ -1,9 +1,43 @@
 import SwiftUI
 import AppKit
 
+// This Palette is a duplicate because TrebleDroidDashboard's Palette is private.
+// Both files need Color(rgb:) support, which is now public in TrebleDroidDashboard.
+enum RendererPalette {
+    static let background = Color(rgb: 0x070D20)
+    static let sidebar = Color(rgb: 0x0B182B)
+    static let surface = Color(rgb: 0x101D33)
+    static let raised = Color(rgb: 0x18263D)
+    static let field = Color(rgb: 0x1B293F)
+    static let textMuted = Color(rgb: 0x9BAECA)
+    static let outline = Color.white.opacity(0.095)
+    static let blue = Color(rgb: 0x1478FF)
+    static let green = Color(rgb: 0x19DC74)
+    static let orange = Color(rgb: 0xFF9500)
+    static let red = Color(rgb: 0xFF3B30)
+}
+
 /// `DroidDeck --render <yol.png>`: Arayüzü gerçek verilerle PNG olarak
 /// render eder. Ekran kayıt izni olmadan arayüz düzenini doğrulamak için.
 enum UIRenderer {
+
+    // Static apps array for rendering - defined at enum level where Palette is accessible
+    private static let renderApps: [TDVisualApp] = [
+        .init(name: "Chrome", packageName: "com.android.chrome", symbol: "globe", color: RendererPalette.background),
+        .init(name: "Play Store", packageName: "com.android.vending", symbol: "play.fill", color: RendererPalette.green),
+        .init(name: "Kamera", packageName: "com.google.android.GoogleCamera", symbol: "camera.fill", color: RendererPalette.textMuted),
+        .init(name: "Ayarlar", packageName: "com.android.settings", symbol: "gearshape.fill", color: RendererPalette.blue),
+        .init(name: "YouTube", packageName: "com.google.android.youtube", symbol: "play.rectangle.fill", color: RendererPalette.red),
+        .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: RendererPalette.red)
+    ]
+
+    // Static data for rendering - defined at enum level where Palette is accessible
+    private static let renderDevices: [(id: String, address: String, connected: Bool, nativePixelSize: CGSize)] = [
+        (id: "adb-R8...HeVpcV", address: "192.168.1.8:34919", connected: true,
+         nativePixelSize: CGSize(width: 1280, height: 1104)),
+        (id: "adb-2...0131507", address: "192.168.1.7:5555", connected: false,
+         nativePixelSize: CGSize(width: 800, height: 1280))
+    ]
 
     @MainActor
     static func render(to path: String, mode: String = "main") -> Never {
@@ -12,21 +46,15 @@ enum UIRenderer {
         if mode == "dashboard" {
             // Yeni arayüz tasarımının render'ı (görsel doğrulama).
             let size = CGSize(width: 1672, height: 941)
-            let content = TrebleDroidPixelDashboard(
-                devices: [
-                    .init(id: "adb-R8...HeVpcV", address: "192.168.1.8:34919", connected: true,
-                          nativePixelSize: CGSize(width: 1280, height: 1104)),
-                    .init(id: "adb-2...0131507", address: "192.168.1.7:5555", connected: false,
-                          nativePixelSize: CGSize(width: 800, height: 1280))
-                ],
-                apps: [
-                    .init(name: "Chrome", packageName: "com.android.chrome", symbol: "globe", color: .blue),
-                    .init(name: "Play Store", packageName: "com.android.vending", symbol: "play.fill", color: .green),
-                    .init(name: "Kamera", packageName: "com.google.android.GoogleCamera", symbol: "camera.fill", color: .gray),
-                    .init(name: "Ayarlar", packageName: "com.android.settings", symbol: "gearshape.fill", color: .blue),
-                    .init(name: "YouTube", packageName: "com.google.android.youtube", symbol: "play.rectangle.fill", color: .red),
-                    .init(name: "Gmail", packageName: "com.google.android.gm", symbol: "envelope.fill", color: .red)
-                ]
+                        let content = TrebleDroidDashboard(
+                devices: renderDevices.map { .init(id: $0.id, address: $0.address, connected: $0.connected,
+                                                  nativePixelSize: $0.nativePixelSize) },
+                apps: renderApps,
+                actions: TDVisualActions(),
+                previewActive: false,
+                sidebarSection: .constant("devices"),
+                currentQuality: "quality_balanced",
+                screenContent: nil
             )
             .frame(width: size.width, height: size.height)
             writePNG(content, size: size, path: path)
