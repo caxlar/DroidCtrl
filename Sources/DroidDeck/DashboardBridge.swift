@@ -269,12 +269,30 @@ final class DashboardBridge: ObservableObject {
 
     /// Cihazın Ayarlar uygulamasını açar.
     private func openDeviceSettings() {
-        guard let app = store.apps.first(where: { $0.packageName == "com.android.settings" }) else {
-            // Uygulama listesi henüz yüklenmediyse doğrudan paket adıyla aç.
-            store.statusMessage = "Ayarlar uygulaması açılıyor…"
+        guard let adb = store.adb, let device = store.selectedDevice else {
+            store.lastError = "Önce bir cihaz seçin"
             return
         }
-        store.launch(app)
+        let serial = device.serial
+
+        // Önce listeden bulmayı dene.
+        if let app = store.apps.first(where: { $0.packageName == "com.android.settings" }) {
+            store.launch(app)
+            return
+        }
+
+        // Listede yoksa doğrudan intent ile aç.
+        store.statusMessage = "Ayarlar uygulaması açılıyor…"
+        DispatchQueue.global(qos: .userInitiated).async {
+            let r = adb.shell(serial, [
+                "am", "start", "-n", "com.android.settings/.Settings"
+            ], timeout: 10)
+            DispatchQueue.main.async {
+                if !r.succeeded {
+                    self.store.lastError = "Ayarlar açılamadı: \(r.combined)"
+                }
+            }
+        }
     }
 
     enum PickerKind { case apk, anyFile }
