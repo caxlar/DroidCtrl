@@ -92,6 +92,8 @@ struct TrebleDroidPixelDashboard: View {
     var sidebarSection: String = "Cihazlar"
     /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
     @State var currentQuality: String = "Dengeli"
+    /// LocalizationManager — dil değiştirme için.
+    @EnvironmentObject var localization: LocalizationManager
     /// Provide the existing stream view here. It is fitted to the selected native resolution.
     var screenContent: AnyView? = nil
 
@@ -124,7 +126,7 @@ struct TrebleDroidPixelDashboard: View {
                     // Kenar çubuğu seçimi — gerçek bölüm geçişi.
                     Group {
                         switch sidebarSection {
-                        case "Ayarlar": settingsPanel
+                        case "Ayarlar": settingsPanel(localization: localization)
                         case "Hakkında": aboutPanel
                         default: devicePanel
                         }
@@ -310,9 +312,8 @@ struct TrebleDroidPixelDashboard: View {
     // MARK: - Kenar çubuğu bölümleri
 
     /// "Ayarlar" — önizleme kalitesi, termal koruma, dil, etiket önbelleği.
-    private var settingsPanel: some View {
-        @EnvironmentObject var localization: LocalizationManager
-        return VStack(alignment: .leading, spacing: 14) {
+    private func settingsPanel(localization: LocalizationManager) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("settings").font(.system(size: 19, weight: .bold))
                 Spacer()
