@@ -338,9 +338,15 @@ struct TrebleDroidPixelDashboard: View {
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if localization.needsRestart {
-                    Text("restart_required")
-                        .font(.system(size: 10))
-                        .foregroundStyle(Palette.orange)
+                    HStack(spacing: 8) {
+                        Text("restart_required")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Palette.orange)
+                        Spacer()
+                        primaryButton("restart_now", icon: "arrow.clockwise") {
+                            localization.restartApp()
+                        }
+                    }
                 }
             }
             .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))

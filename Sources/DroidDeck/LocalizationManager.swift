@@ -52,8 +52,8 @@ final class LocalizationManager: ObservableObject {
 
     private init() {
         // Kaydedilmiş dil varsa onu, yoksa sistem dilini kullan.
-        if let saved = UserDefaults.standard.array(forKey: "AppleLanguages")?.first as? String,
-           supportedLanguages.map({ $0.id }).contains(saved) {
+        let saved = UserDefaults.standard.string(forKey: "AppleLanguage")
+        if let saved, supportedLanguages.map({ $0.id }).contains(saved) {
             currentLanguage = saved
         } else {
             let system = Locale.current.language.languageCode?.identifier ?? "en"
@@ -65,6 +65,10 @@ final class LocalizationManager: ObservableObject {
     func setLanguage(_ code: String) {
         guard supportedLanguages.map({ $0.id }).contains(code) else { return }
         currentLanguage = code
+        UserDefaults.standard.set(code, forKey: "AppleLanguage")
+        UserDefaults.standard.set([code], forKey: "AppleLanguages")
+        UserDefaults.standard.synchronize()
+        needsRestart = true
     }
 
     /// Dil nesnesini getir.
@@ -134,6 +138,7 @@ enum L10n {
     static let languageGerman = "language_german"
     static let languageItalian = "language_italian"
     static let restartRequired = "restart_required"
+    static let restartNow = "restart_now"
 
     // Actions
     static let wakeUnlock = "wake_unlock"

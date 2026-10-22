@@ -28,7 +28,7 @@
         "tr": {"stringUnit": {"state": "translated", "value": "Cihazları Tara"}},
         "es": {"stringUnit": {"state": "translated", "value": "Escanear Dispositivos"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "扫描设备"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Geräte scannen"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Geräte Scannen"}},
         "it": {"stringUnit": {"state": "translated", "value": "Scansiona Dispositivi"}}
       }
     },
@@ -175,10 +175,10 @@
     "select_language": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Select Language"}},
-        "tr": {"stringUnit": {"state": "translated", "value": "Dil Seç"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dil Seçin"}},
         "es": {"stringUnit": {"state": "translated", "value": "Seleccionar Idioma"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "选择语言"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Sprache auswählen"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Sprache Wählen"}},
         "it": {"stringUnit": {"state": "translated", "value": "Seleziona Lingua"}}
       }
     },
@@ -245,11 +245,21 @@
     "restart_required": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Language changed. Please restart the app."}},
-        "tr": {"stringUnit": {"state": "translated", "value": "Dil değiştirildi. Lütfen uygulamayı yeniden başlatın."}},
-        "es": {"stringUnit": {"state": "translated", "value": "Idioma cambiado. Por favor reinicie la aplicación."}},
-        "zh-Hans": {"stringUnit": {"state": "translated", "value": "语言已更改。请重启应用程序。"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Sprache geändert. Bitte starten Sie die App neu."}},
-        "it": {"stringUnit": {"state": "translated", "value": "Lingua modificata. Riavvia l'app."}}
+        "tr": {"stringUnit": {"state": "translated", "value": "Dil değiştirildi. Değişiklikler için uygulamayı yeniden başlatın."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Idioma cambiado. Reinicie la aplicación para aplicar los cambios."}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "语言已更改。请重启应用程序以使更改生效。"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Sprache geändert. Bitte starten Sie die App neu, um Änderungen zu übernehmen."}},
+        "it": {"stringUnit": {"state": "translated", "value": "Lingua modificata. Riavvia l'app per applicare le modifiche."}}
+      }
+    },
+    "restart_now": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Restart Now"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Şimdi Yeniden Başlat"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Reiniciar Ahora"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "立即重启"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Jetzt Neustarten"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Riavvia Ora"}}
       }
     },
     "wake_unlock": {
@@ -278,7 +288,7 @@
         "tr": {"stringUnit": {"state": "translated", "value": "Ekranı Aç/Kapat"}},
         "es": {"stringUnit": {"state": "translated", "value": "Activar/Desactivar Pantalla"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "切换屏幕"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Bildschirm umschalten"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Bildschirm Umschalten"}},
         "it": {"stringUnit": {"state": "translated", "value": "Attiva/Disattiva Schermo"}}
       }
     },
@@ -288,7 +298,7 @@
         "tr": {"stringUnit": {"state": "translated", "value": "APK Yükle"}},
         "es": {"stringUnit": {"state": "translated", "value": "Instalar APK"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "安装 APK"}},
-        "de": {"stringUnit": {"state": "translated", "value": "APK installieren"}},
+        "de": {"stringUnit": {"state": "translated", "value": "APK Installieren"}},
         "it": {"stringUnit": {"state": "translated", "value": "Installa APK"}}
       }
     },
@@ -358,7 +368,7 @@
         "tr": {"stringUnit": {"state": "translated", "value": "Cihazı Yeniden Başlat"}},
         "es": {"stringUnit": {"state": "translated", "value": "Reiniciar Dispositivo"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "重启设备"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Gerät neu starten"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Gerät Neu Starten"}},
         "it": {"stringUnit": {"state": "translated", "value": "Riavvia Dispositivo"}}
       }
     },
@@ -368,17 +378,17 @@
         "tr": {"stringUnit": {"state": "translated", "value": "Etiketleri Sıfırla"}},
         "es": {"stringUnit": {"state": "translated", "value": "Restablecer Etiquetas"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "重置标签"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Labels zurücksetzen"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Labels Zurücksetzen"}},
         "it": {"stringUnit": {"state": "translated", "value": "Ripristina Etichette"}}
       }
     },
     "restart_adb": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Restart ADB Server"}},
-        "tr": {"stringUnit": {"state": "translated", "value": "ADB Sunucusunu Yenile"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "ADB Sunucusunu Yeniden Başlat"}},
         "es": {"stringUnit": {"state": "translated", "value": "Reiniciar Servidor ADB"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "重启 ADB 服务器"}},
-        "de": {"stringUnit": {"state": "translated", "value": "ADB Server neu starten"}},
+        "de": {"stringUnit": {"state": "translated", "value": "ADB Server Neu Starten"}},
         "it": {"stringUnit": {"state": "translated", "value": "Riavvia Server ADB"}}
       }
     },
@@ -406,10 +416,10 @@
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Click to View Screen"}},
         "tr": {"stringUnit": {"state": "translated", "value": "Ekranı Görüntülemek İçin Tıklayın"}},
-        "es": {"stringUnit": {"state": "translated", "value": "Haz clic para ver la pantalla"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Haz Clic para Ver la Pantalla"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "点击查看屏幕"}},
         "de": {"stringUnit": {"state": "translated", "value": "Klicken für Bildschirm"}},
-        "it": {"stringUnit": {"state": "translated", "value": "Clicca per visualizzare lo schermo"}}
+        "it": {"stringUnit": {"state": "translated", "value": "Clicca per Visualizzare lo Schermo"}}
       }
     },
     "manual_connect": {
@@ -418,7 +428,7 @@
         "tr": {"stringUnit": {"state": "translated", "value": "Elle Bağlan"}},
         "es": {"stringUnit": {"state": "translated", "value": "Conexión Manual"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "手动连接"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Manuell verbinden"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Manuell Verbinden"}},
         "it": {"stringUnit": {"state": "translated", "value": "Connessione Manuale"}}
       }
     },
@@ -435,11 +445,11 @@
     "enter_first": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Enter IP:port first"}},
-        "tr": {"stringUnit": {"state": "translated", "value": "Önce IP:port girin"}},
-        "es": {"stringUnit": {"state": "translated", "value": "Ingrese IP:puerto primero"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Önce IP:port Girin"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Ingrese IP:puerto Primero"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "请先输入 IP:端口"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Zuerst IP:Port eingeben"}},
-        "it": {"stringUnit": {"state": "translated", "value": "Inserisci prima IP:porta"}}
+        "de": {"stringUnit": {"state": "translated", "value": "Zuerst IP:Port Eingeben"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Inserisci Prima IP:Porta"}}
       }
     },
     "connecting": {
@@ -475,10 +485,10 @@
     "enter_code": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Enter Code"}},
-        "tr": {"stringUnit": {"state": "translated", "value": "Kodu Gir"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Kodu Girin"}},
         "es": {"stringUnit": {"state": "translated", "value": "Ingresar Código"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "输入代码"}},
-        "de": {"stringUnit": {"state": "translated", "value": "Code eingeben"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Code Eingeben"}},
         "it": {"stringUnit": {"state": "translated", "value": "Inserisci Codice"}}
       }
     },
@@ -495,7 +505,7 @@
     "retry": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Retry"}},
-        "tr": {"stringUnit": {"state": "translated", "value": "Tekrar Dene"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Tekrar Deneyin"}},
         "es": {"stringUnit": {"state": "translated", "value": "Reintentar"}},
         "zh-Hans": {"stringUnit": {"state": "translated", "value": "重试"}},
         "de": {"stringUnit": {"state": "translated", "value": "Wiederholen"}},
