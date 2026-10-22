@@ -48,9 +48,9 @@ enum PreviewQuality: String, CaseIterable, Identifiable {
 /// Cihaz sıcaklığı güvenlik sınırları.
 enum ThermalLimit {
     /// Bu değerin üstünde yayın otomatik durur (°C).
-    static let stopCelsius = 42
+    static let stopCelsius = 45
     /// Bu değerin üstünde kullanıcı uyarılır (°C).
-    static let warnCelsius = 38
+    static let warnCelsius = 40
     /// Ne sıklıkla sıcaklık okunur (saniye).
     static let pollSeconds: TimeInterval = 15
 }
