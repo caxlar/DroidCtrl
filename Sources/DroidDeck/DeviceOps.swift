@@ -323,8 +323,26 @@ extension ADBService {
     }
 
     /// APK kurar (`-r` = mevcut sürümü değiştir).
+    ///
+    /// Sandbox uyumlu: önce cihaza push eder, sonra pm install -r,
+    /// sonra geçici dosyayı siler. `adb install` yerel yolu okuyamayabilir.
     func installAPK(localURL: URL, serial: String) -> CommandResult {
-        adb(["-s", serial, "install", "-r", localURL.path])
+        let scoped = localURL.startAccessingSecurityScopedResource()
+        defer { if scoped { localURL.stopAccessingSecurityScopedResource() } }
+
+        let remote = "/data/local/tmp/droiddeck_\(UUID().uuidString.prefix(8)).apk"
+
+        // 1. Push
+        let push = adb(["-s", serial, "push", localURL.path, remote], timeout: 60)
+        guard push.succeeded else { return push }
+
+        // 2. Install
+        let install = adb(["-s", serial, "shell", "pm", "install", "-r", remote], timeout: 120)
+
+        // 3. Temizle
+        _ = adb(["-s", serial, "shell", "rm", "-f", remote], timeout: 10)
+
+        return install
     }
 
     /// Dosyayı medya tarayıcıya bildirir ki galeride görünsün.
