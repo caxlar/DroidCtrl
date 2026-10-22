@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 
 /// Tüm uygulama durumu ve ADB işlemlerini yöneten tek kaynak.
 @MainActor
@@ -873,25 +874,40 @@ final class DeviceStore: ObservableObject {
             return
         }
         let serial = device.serial
-        screenshotStatus = "Alınıyor…"
-        DispatchQueue.global(qos: .userInitiated).async {
-            let remote = "/sdcard/droiddeck_shot.png"
-            _ = adb.shell(serial, ["screencap", "-p", remote], timeout: 20)
 
+        // Önce cihazda ekran görüntüsü al.
+        screenshotStatus = "Alınıyor…"
+        let remote = "/sdcard/droiddeck_shot.png"
+        let cap = adb.shell(serial, ["screencap", "-p", remote], timeout: 20)
+        guard cap.succeeded else {
+            DispatchQueue.main.async {
+                self.screenshotStatus = "✗ Ekran görüntüsü alınamadı: \(cap.combined)"
+            }
+            return
+        }
+
+        // Kullanıcıya nereye kaydedeceğini sor.
+        DispatchQueue.main.async {
+            let panel = NSSavePanel()
             let f = DateFormatter()
             f.dateFormat = "yyyyMMdd-HHmmss"
-            let name = "DroidDeck-\(f.string(from: Date())).png"
-            let dest = FileManager.default.homeDirectoryForCurrentUser
-                .appendingPathComponent("Desktop")
-                .appendingPathComponent(name)
-
-            let r = adb.adb(["-s", serial, "pull", remote, dest.path], timeout: 30)
-            _ = adb.shell(serial, ["rm", "-f", remote], timeout: 10)
-
-            DispatchQueue.main.async {
-                self.screenshotStatus = r.succeeded
-                    ? "✓ Kaydedildi: \(dest.lastPathComponent)"
-                    : "✗ Ekran görüntüsü alınamadı: \(r.combined)"
+            panel.nameFieldStringValue = "DroidDeck-\(f.string(from: Date())).png"
+            panel.allowedContentTypes = [.png]
+            panel.canCreateDirectories = true
+            panel.title = "Ekran Görüntüsünü Kaydet"
+            panel.message = "Cihaz: \(device.model ?? serial)"
+            panel.begin { [weak self] response in
+                guard response == .OK, let url = panel.url, let self else { return }
+                self.screenshotStatus = "Kaydediliyor…"
+                DispatchQueue.global(qos: .userInitiated).async {
+                    let r = adb.adb(["-s", serial, "pull", remote, url.path], timeout: 30)
+                    _ = adb.shell(serial, ["rm", "-f", remote], timeout: 10)
+                    DispatchQueue.main.async {
+                        self.screenshotStatus = r.succeeded
+                            ? "✓ Kaydedildi: \(url.lastPathComponent)"
+                            : "✗ Kaydetme başarısız: \(r.combined)"
+                    }
+                }
             }
         }
     }
