@@ -58,7 +58,7 @@
 "devices" = "Dispositivos";
 "new_device_search" = "Buscar Nuevo Dispositivo";
 "scan_network_mdns" = "Escanear dispositivos de red (mDNS)";
-"found_devices" = "Dispositivos Encontrados ({count})";
+"found_devices" = "Dispositivos Encontrados (%d)";
 "android_control_center_desc" = "Centro de Control Android";
 "control_with_adb_scrcpy" = "Controla TV, teléfono y tablet desde tu Mac con adb + cliente scrcpy integrado.";
 "security_local_only" = "La app solo funciona en RED LOCAL. ADB es control total del dispositivo; no debe exponerse a internet.";
@@ -110,3 +110,6 @@
 "render_manual_connect" = "Conexión Manual";
 "settings_desc" = "Vista previa, protección térmica, idioma y caché de datos.";
 "thermal_desc" = "Si la temperatura ≥ 45°C la vista previa se detiene automáticamente. Advertencia a ≥ 40°C.";
+"enter_key" = "Intro";
+"delete_key" = "Eliminar";
+"load_apps" = "Cargar Apps";

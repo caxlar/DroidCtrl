@@ -288,7 +288,7 @@ struct TrebleDroidPixelDashboard: View {
                         .padding(.top, 7)
                         HStack(spacing: 7) {
                             Image(systemName: "desktopcomputer")
-                            Text("found_devices").fontWeight(.semibold)
+                            Text(String(format: NSLocalizedString("found_devices", comment: ""), devices.count)).fontWeight(.semibold)
                         }.padding(.top, 7)
             ForEach(devices) { device in
                 deviceRow(device)
@@ -535,10 +535,10 @@ struct TrebleDroidPixelDashboard: View {
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Palette.outline, lineWidth: 2))
             }
             HStack(spacing: 11) {
-                quickAction("Ekranı Aç / Kapat", "display", "toggleScreen")
-                quickAction("Ekran Görüntüsü", "camera", "screenshot")
-                quickAction("APK Yükle", "square.and.arrow.up", "installApk")
-                quickAction("Dosya Aktar", "folder", "fileTransfer")
+                quickAction("toggle_screen", "display", "toggleScreen")
+                quickAction("screenshot", "camera", "screenshot")
+                quickAction("install_apk", "square.and.arrow.up", "installApk")
+                quickAction("file_transfer", "folder", "fileTransfer")
             }.frame(height: 52)
         }
         .padding(13)
@@ -631,18 +631,18 @@ struct TrebleDroidPixelDashboard: View {
                 primaryButton("Gönder") { actions.command("type:\(keyboardText)") }
                 primaryButton("Temizle") { keyboardText = "" }
             }
-            quickAction("Enter", "return", "enter")
-            quickAction("Sil", "delete.left", "delete")
+            quickAction("enter_key", "return", "enter")
+            quickAction("delete_key", "delete.left", "delete")
         }.frame(height: 305, alignment: .top)
     }
     private var toolsView: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("tools").font(.system(size: 16, weight: .bold))
-            quickAction("Cihaz Bilgileri", "info.circle", "deviceInfo")
-            quickAction("Ekranı Uyandır", "sun.max", "wake")
-            quickAction("Uygulamaları Yenile", "arrow.triangle.2.circlepath", "loadApps")
-            quickAction("Bağlantıyı Kes", "wifi.slash", "disconnect")
-            quickAction("Cihazı Yeniden Başlat", "arrow.clockwise", "reboot")
+            quickAction("device_info", "info.circle", "deviceInfo")
+            quickAction("wake_unlock", "sun.max", "wake")
+            quickAction("load_apps", "arrow.triangle.2.circlepath", "loadApps")
+            quickAction("disconnect", "wifi.slash", "disconnect")
+            quickAction("reboot_device", "arrow.clockwise", "reboot")
 
             // Medya kontrolleri — aktif medya oturumuna gider.
             VStack(alignment: .leading, spacing: 6) {

@@ -2407,37 +2407,37 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Found Devices ({count})"
+            "value": "Found Devices (%d)"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bulunan Cihazlar ({count})"
+            "value": "Bulunan Cihazlar (%d)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dispositivos Encontrados ({count})"
+            "value": "Dispositivos Encontrados (%d)"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "找到的设备 ({count})"
+            "value": "找到的设备 (%d)"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gefundene Geräte ({count})"
+            "value": "Gefundene Geräte (%d)"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dispositivi Trovati ({count})"
+            "value": "Dispositivi Trovati (%d)"
           }
         }
       }
@@ -4478,6 +4478,126 @@
           "stringUnit": {
             "state": "translated",
             "value": "Se la temperatura ≥ 45°C l'anteprima si ferma automaticamente. Avviso a ≥ 40°C."
+          }
+        }
+      }
+    },
+    "enter_key": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intro"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回车"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invio"
+          }
+        }
+      }
+    },
+    "delete_key": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sil"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancella"
+          }
+        }
+      }
+    },
+    "load_apps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaları Yenile"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cargar Apps"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加载应用"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps Laden"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carica App"
           }
         }
       }
