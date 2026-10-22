@@ -311,38 +311,11 @@ struct TrebleDroidPixelDashboard: View {
                 .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 .fixedSize(horizontal: false, vertical: true)
 
-            // Önizleme kalitesi — cihaz yükünü belirler.
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Önizleme Kalitesi", systemImage: "gauge.with.dots.needle.33percent")
-                    .font(.system(size: 13, weight: .semibold))
-                ForEach(["Düşük", "Dengeli", "Yüksek (TV)"], id: \.self) { quality in
-                    Button {
-                        actions.command("quality:\(quality)")
-                    } label: {
-                        HStack {
-                            Text(quality).font(.system(size: 12))
-                            Spacer()
-                            if quality == currentQuality {
-                                Image(systemName: "checkmark").foregroundStyle(Palette.blue)
-                            }
-                        }
-                        .padding(.horizontal, 11).frame(height: 38)
-                        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8)
-                            .stroke(quality == currentQuality ? Palette.blue : Palette.outline))
-                    }.buttonStyle(.plain)
-                }
-                Text("Düşük = en az yük. Cihaz ısınırsa otomatik durur.")
-                    .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
-            }
-            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
-            .strokePanel()
-
             // Termal koruma durumu.
             VStack(alignment: .leading, spacing: 8) {
                 Label("Termal Koruma", systemImage: "thermometer.medium")
                     .font(.system(size: 13, weight: .semibold))
-                Text("Sıcaklık ≥ 42°C olursa önizleme otomatik durur. ≥ 38°C'de uyarı verilir.")
+                Text("Sıcaklık ≥ 45°C olursa önizleme otomatik durur. ≥ 40°C'de uyarı verilir.")
                     .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -469,6 +442,25 @@ struct TrebleDroidPixelDashboard: View {
                 squareButton("plus") { zoom = min(2, zoom + 0.1) }
                 squareButton("arrow.clockwise") { actions.command("refresh") }
                 squareButton("arrow.up.left.and.arrow.down.right") { actions.command("fullscreen") }
+                // Kalite seçici — kompakt, yan yana.
+                Menu {
+                    ForEach(["Düşük", "Dengeli", "Yüksek (TV)"], id: \.self) { q in
+                        Button {
+                            actions.command("quality:\(q)")
+                            currentQuality = q
+                        } label: {
+                            Label(q, systemImage: q == currentQuality ? "checkmark" : "")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "gauge.with.dots.needle.33percent")
+                        .font(.system(size: 16, weight: .semibold))
+                        .frame(width: 37, height: 37)
+                        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 9))
+                        .overlay(RoundedRectangle(cornerRadius: 9).stroke(Palette.outline))
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
             }
             .frame(height: 37)
             GeometryReader { geometry in
