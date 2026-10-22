@@ -23,6 +23,12 @@ cp .build/release/DroidDeck "$DEST/Contents/MacOS/${APP_NAME}"
 cp Resources/Info.plist "$DEST/Contents/Info.plist"
 cp Resources/TabletPreview.png "$DEST/Contents/Resources/TabletPreview.png"
 
+# Localization files
+for lang in en tr es zh-Hans de it; do
+    mkdir -p "$DEST/Contents/Resources/${lang}.lproj"
+    cp "Resources/${lang}.lproj/Localizable.strings" "$DEST/Contents/Resources/${lang}.lproj/"
+done
+
 # --- İmzalama -------------------------------------------------------------
 #
 # Gatekeeper: ad-hoc imzalı bir uygulama kendi makinenizde çalışır ama başka

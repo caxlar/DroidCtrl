@@ -155,7 +155,7 @@ struct RemoteButton: View {
             VStack(spacing: 5) {
                 Image(systemName: icon)
                     .font(.system(size: 17, weight: .medium))
-                Text(title)
+                Text(LocalizedStringKey(title))
                     .font(.caption2)
                     .lineLimit(2)
                     .minimumScaleFactor(0.7)

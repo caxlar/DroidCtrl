@@ -248,7 +248,7 @@ struct TrebleDroidPixelDashboard: View {
         Button { actions.command("sidebar:\(title)") } label: {
             HStack(spacing: 14) {
                 Image(systemName: icon).font(.system(size: 20)).frame(width: 22)
-                Text(title).fontWeight(selected ? .semibold : .medium)
+                Text(LocalizedStringKey(title)).fontWeight(selected ? .semibold : .medium)
                 Spacer(minLength: 0)
                 if let count {
                     Text("\(count)").font(.system(size: 11, weight: .bold))
@@ -738,7 +738,7 @@ struct TrebleDroidPixelDashboard: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 if let icon { Image(systemName: icon) }
-                Text(title).fontWeight(.semibold)
+                Text(LocalizedStringKey(title)).fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity).frame(height: 43)
             .background(Palette.blue.gradient, in: RoundedRectangle(cornerRadius: 8))
@@ -756,7 +756,7 @@ struct TrebleDroidPixelDashboard: View {
         Button { actions.command(command) } label: {
             HStack(spacing: 10) {
                 Image(systemName: symbol).font(.system(size: 18))
-                Text(title).font(.system(size: 12, weight: .medium)).lineLimit(1)
+                Text(LocalizedStringKey(title)).font(.system(size: 12, weight: .medium)).lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity).frame(height: 51)

@@ -87,7 +87,7 @@ struct PairingInstructions: View {
                 .background(Color.accentColor, in: Circle())
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(title)
+                Text(LocalizedStringKey(title))
                     .font(.headline)
 
                 VStack(alignment: .leading, spacing: 3) {
