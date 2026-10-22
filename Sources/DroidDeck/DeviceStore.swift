@@ -18,7 +18,9 @@ final class DeviceStore: ObservableObject {
     @Published var adbPath: String?
     @Published var scrcpyPath: String?
 
-    @Published var selectedDeviceID: String?
+    @Published var selectedDeviceID: String? {
+        didSet { syncTelemetry() }
+    }
 
     @Published var apps: [AndroidApp] = []
     @Published var isLoadingApps = false
