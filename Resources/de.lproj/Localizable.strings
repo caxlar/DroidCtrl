@@ -108,3 +108,5 @@
 "render_devices" = "Geräte";
 "render_found_mdns" = "Gefundene Geräte (mDNS)";
 "render_manual_connect" = "Manuell Verbinden";
+"settings_desc" = "Vorschau, Thermalschutz, Sprache und Daten-Cache.";
+"thermal_desc" = "Bei Temperatur ≥ 45°C stoppt Vorschau automatisch. Warnung bei ≥ 40°C.";

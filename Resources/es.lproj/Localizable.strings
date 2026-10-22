@@ -108,3 +108,5 @@
 "render_devices" = "Dispositivos";
 "render_found_mdns" = "Dispositivos Encontrados (mDNS)";
 "render_manual_connect" = "Conexión Manual";
+"settings_desc" = "Vista previa, protección térmica, idioma y caché de datos.";
+"thermal_desc" = "Si la temperatura ≥ 45°C la vista previa se detiene automáticamente. Advertencia a ≥ 40°C.";

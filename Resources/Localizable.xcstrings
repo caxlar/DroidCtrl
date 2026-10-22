@@ -4401,6 +4401,86 @@
           }
         }
       }
+    },
+    "settings_desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview, thermal protection, language and data cache."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önizleme, termal koruma, dil ve veri önbelleği."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vista previa, protección térmica, idioma y caché de datos."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览、热保护、语言和数据缓存。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau, Thermalschutz, Sprache und Daten-Cache."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anteprima, protezione termica, lingua e cache dati."
+          }
+        }
+      }
+    },
+    "thermal_desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If temperature ≥ 45°C preview stops automatically. Warning at ≥ 40°C."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıcaklık ≥ 45°C olursa önizleme otomatik durur. ≥ 40°C'de uyarı verilir."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si la temperatura ≥ 45°C la vista previa se detiene automáticamente. Advertencia a ≥ 40°C."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "如果温度 ≥ 45°C，预览自动停止。≥ 40°C 时警告。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei Temperatur ≥ 45°C stoppt Vorschau automatisch. Warnung bei ≥ 40°C."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se la temperatura ≥ 45°C l'anteprima si ferma automaticamente. Avviso a ≥ 40°C."
+          }
+        }
+      }
     }
   }
 }

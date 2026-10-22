@@ -108,3 +108,5 @@
 "render_devices" = "Devices";
 "render_found_mdns" = "Devices Found (mDNS)";
 "render_manual_connect" = "Manual Connect";
+"settings_desc" = "Preview, thermal protection, language and data cache.";
+"thermal_desc" = "If temperature ≥ 45°C preview stops automatically. Warning at ≥ 40°C.";

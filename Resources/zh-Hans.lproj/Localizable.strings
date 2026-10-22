@@ -108,3 +108,5 @@
 "render_devices" = "设备";
 "render_found_mdns" = "找到的设备 (mDNS)";
 "render_manual_connect" = "手动连接";
+"settings_desc" = "预览、热保护、语言和数据缓存。";
+"thermal_desc" = "如果温度 ≥ 45°C，预览自动停止。≥ 40°C 时警告。";

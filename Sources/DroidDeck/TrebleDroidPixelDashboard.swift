@@ -91,7 +91,7 @@ struct TrebleDroidPixelDashboard: View {
     /// Sol kenar çubuğu seçimi — hangi panelin gösterildiğini belirler.
     @State var sidebarSection: String = "devices"
     /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
-    @State var currentQuality: String = "Dengeli"
+    @State var currentQuality: String = "quality_balanced"
     /// LocalizationManager — dil değiştirme için.
     @EnvironmentObject var localization: LocalizationManager
     /// Provide the existing stream view here. It is fitted to the selected native resolution.
@@ -126,8 +126,8 @@ struct TrebleDroidPixelDashboard: View {
                     // Kenar çubuğu seçimi — gerçek bölüm geçişi.
                     Group {
                         switch sidebarSection {
-                        case "Ayarlar": settingsPanel(localization: localization)
-                        case "Hakkında": aboutPanel
+                        case "settings": settingsPanel(localization: localization)
+                        case "about": aboutPanel
                         default: devicePanel
                         }
                     }
@@ -318,7 +318,7 @@ struct TrebleDroidPixelDashboard: View {
                 Text("settings").font(.system(size: 19, weight: .bold))
                 Spacer()
             }
-            Text("Önizleme, termal koruma, dil ve veri önbelleği.")
+            Text("settings_desc")
                 .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -356,7 +356,7 @@ struct TrebleDroidPixelDashboard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label("thermal_protection", systemImage: "thermometer.medium")
                     .font(.system(size: 13, weight: .semibold))
-                Text("Sıcaklık ≥ 45°C olursa önizleme otomatik durur. ≥ 40°C'de uyarı verilir.")
+                Text("thermal_desc")
                     .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -493,7 +493,7 @@ struct TrebleDroidPixelDashboard: View {
                                             actions.command("quality:\\(q)")
                                             currentQuality = q
                                         } label: {
-                                            Text(q == "quality_high" ? "TV" : (q == "quality_low" ? "low" : "balanced"))
+                                            Text(LocalizedStringKey(q == "quality_high" ? "TV" : q))
                                                 .font(.system(size: 10, weight: .medium))
                                                 .padding(.horizontal, 8).frame(height: 28)
                                                 .background(currentQuality == q ? Palette.blue : Palette.raised,

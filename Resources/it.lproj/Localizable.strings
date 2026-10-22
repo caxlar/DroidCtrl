@@ -108,3 +108,5 @@
 "render_devices" = "Dispositivi";
 "render_found_mdns" = "Dispositivi Trovati (mDNS)";
 "render_manual_connect" = "Connessione Manuale";
+"settings_desc" = "Anteprima, protezione termica, lingua e cache dati.";
+"thermal_desc" = "Se la temperatura ≥ 45°C l'anteprima si ferma automaticamente. Avviso a ≥ 40°C.";

@@ -108,3 +108,5 @@
 "render_devices" = "Cihazlar";
 "render_found_mdns" = "Ağda Bulunanlar (mDNS)";
 "render_manual_connect" = "Elle Bağlan";
+"settings_desc" = "Önizleme, termal koruma, dil ve veri önbelleği.";
+"thermal_desc" = "Sıcaklık ≥ 45°C olursa önizleme otomatik durur. ≥ 40°C'de uyarı verilir.";
