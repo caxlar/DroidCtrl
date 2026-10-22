@@ -21,7 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 @main
 @MainActor
-struct DroidDeckApp: App {
+struct DroidCtrlApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var store: DeviceStore
     @StateObject private var bridge: DashboardBridge
@@ -35,10 +35,10 @@ struct DroidDeckApp: App {
         // LocalizationManager singleton — @StateObject ile yaşam döngüsü yönetilir.
         _localization = StateObject(wrappedValue: LocalizationManager.shared)
         // Tanılama modları arayüz açmadan çalışır:
-        //   DroidDeck --selftest       ayrıştırıcı testleri (cihaza dokunmaz)
-        //   DroidDeck --probe          gerçek cihaza karşı okuma testleri
-        //   DroidDeck --probe-control  + görünmez bir tuş basımı dener
-        //   DroidDeck --render <png>   arayüzü PNG olarak render eder
+        //   DroidCtrl --selftest       ayrıştırıcı testleri (cihaza dokunmaz)
+        //   DroidCtrl --probe          gerçek cihaza karşı okuma testleri
+        //   DroidCtrl --probe-control  + görünmez bir tuş basımı dener
+        //   DroidCtrl --render <png>   arayüzü PNG olarak render eder
         if CommandLine.arguments.contains("--selftest") {
             Selftest.run()
         }
@@ -79,7 +79,7 @@ struct DroidDeckApp: App {
     }
 
     var body: some Scene {
-        WindowGroup("DroidDeck") {
+        WindowGroup("DroidCtrl") {
             DashboardHost(store: store, bridge: bridge)
                 .environmentObject(store)
                 .environmentObject(localization)
@@ -106,7 +106,7 @@ struct DroidDeckApp: App {
         }
 
         // Sistem tepsisi: pencere kapalıyken bile cihaz seç + temel tuşlar.
-        MenuBarExtra("DroidDeck", systemImage: "tv") {
+        MenuBarExtra("DroidCtrl", systemImage: "tv") {
             MenuBarPanel(store: store)
         }
         .menuBarExtraStyle(.menu)

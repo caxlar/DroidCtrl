@@ -37,7 +37,7 @@ final class LabelCache {
                                                 in: .userDomainMask).first
                 ?? URL(fileURLWithPath: NSHomeDirectory())
                     .appendingPathComponent("Library/Application Support")
-            let dir = base.appendingPathComponent("DroidDeck", isDirectory: true)
+            let dir = base.appendingPathComponent("DroidCtrl", isDirectory: true)
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
             let safe = serial.replacingOccurrences(of: "/", with: "_")

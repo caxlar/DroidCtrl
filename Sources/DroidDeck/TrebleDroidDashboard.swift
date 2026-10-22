@@ -127,6 +127,7 @@ struct TrebleDroidDashboard: View {
 Group {
                         switch sidebarSection {
                         case "settings": settingsPanel(localization: localization)
+                        case "Ayarlar": settingsPanel(localization: localization)
                         case "about": aboutPanel
                         default: devicePanel
                         }
@@ -161,12 +162,23 @@ Group {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
-                    Image(systemName: "circle.hexagongrid.fill")
-                        .font(.system(size: 23, weight: .bold))
-                        .frame(width: 48, height: 48)
-                        .background(Palette.blue.gradient, in: RoundedRectangle(cornerRadius: 12))
+                    // Use pre-rendered icons for crisp display
+                    let isRetina = NSScreen.main?.backingScaleFactor ?? 1.0 >= 2.0
+                    let iconName = isRetina ? "icon_80pt@2x" : "icon_80pt@1x"
+                    if let iconPath = Bundle.main.path(forResource: iconName, ofType: "png"),
+                       let nsImage = NSImage(contentsOfFile: iconPath) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .cornerRadius(18)
+                    } else {
+                        Image(systemName: "circle.hexagongrid.fill")
+                            .font(.system(size: 40, weight: .bold))
+                            .frame(width: 80, height: 80)
+                            .background(Palette.blue.gradient, in: RoundedRectangle(cornerRadius: 18))
+                    }
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("trebledroid").font(.system(size: 21, weight: .bold))
+                        Text("DroidCtrl").font(.system(size: 21, weight: .bold))
                         Text("android_control_center").foregroundStyle(Palette.textMuted)
                     }
                 }
@@ -453,7 +465,7 @@ Group {
                     Text(device.address).font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                     HStack(spacing: 6) {
                         Circle().fill(device.connected ? Palette.green : Palette.textMuted).frame(width: 9, height: 9)
-                        Text(device.connected ? "Bağlı" : "Hazır")
+                        Text(device.connected ? LocalizedStringKey("device_connected") : LocalizedStringKey("device_ready"))
                             .foregroundStyle(device.connected ? Palette.green : Palette.textMuted)
                     }.font(.system(size: 11))
                 }
@@ -624,7 +636,7 @@ Group {
     private var keyboardView: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("keyboard").font(.system(size: 16, weight: .bold))
-            TextField("Metin yazın...", text: $keyboardText)
+            TextField(LocalizedStringKey("type_text_placeholder"), text: $keyboardText)
                 .textFieldStyle(.plain).padding(12)
                 .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
             HStack {

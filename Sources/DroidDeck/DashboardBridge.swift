@@ -1,8 +1,8 @@
 //
-//  DashboardBridge.swift — DroidDeck
+//  DashboardBridge.swift — DroidCtrl
 //
 //  Kullanıcının yeni arayüz tasarımını (TrebleDroidPixelDashboard) gerçek
-//  DroidDeck işlevlerine bağlar.
+//  DroidCtrl işlevlerine bağlar.
 //
 //  Tasarım dosyası DEĞİŞTİRİLMEZ: `TDVisualActions` geri çağrıları buradan
 //  doldurulur. Tasarımda olup henüz karşılığı olmayan düğmeler görünür kalır
@@ -128,7 +128,7 @@ final class DashboardBridge: ObservableObject {
                 self?.onMain { bridge in
                     let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !trimmed.isEmpty else {
-                        bridge.store.lastError = "Önce bir IP:port girin"
+                        bridge.store.lastError = NSLocalizedString("error_enter_ip_port", comment: "")
                         return
                     }
                     bridge.store.connect(to: trimmed)
@@ -207,7 +207,7 @@ final class DashboardBridge: ObservableObject {
         case "openSettings": openDeviceSettings()
         case "about":
             store.statusMessage = """
-            DroidDeck — Android Cihaz Kontrol Merkezi
+            DroidCtrl — Android Cihaz Kontrol Merkezi
             adb + gömülü scrcpy istemcisi
             Ağa açık değil: yalnızca yerel ağ üzerinden çalışır.
             """
@@ -256,9 +256,9 @@ final class DashboardBridge: ObservableObject {
             } else if command.hasPrefix("quality:") {
                 let name = String(command.dropFirst("quality:".count))
                 switch name {
-                case "Düşük":        store.previewQuality = .low
-                case "Yüksek (TV)":  store.previewQuality = .high
-                default:             store.previewQuality = .balanced
+                case "quality_low":      store.previewQuality = .low
+                case "quality_high":     store.previewQuality = .high
+                default:                 store.previewQuality = .balanced
                 }
                 // Kalite değişince aktif oturum yeniden kurulmalı.
                 if store.previewActive {

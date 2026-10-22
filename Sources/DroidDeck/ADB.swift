@@ -270,7 +270,7 @@ struct ADBService {
                       turnScreenOff: Bool = false) -> Result<Void, Error> {
         guard let scrcpy = Self.locateScrcpy() else {
             return .failure(NSError(
-                domain: "DroidDeck",
+                domain: "DroidCtrl",
                 code: 404,
                 userInfo: [NSLocalizedDescriptionKey: "scrcpy bulunamadı. `brew install scrcpy` ile kurun."]
             ))
@@ -280,7 +280,7 @@ struct ADBService {
             "--serial", serial,
             "--max-fps", "\(maxFPS)",
             "--video-bit-rate", "\(bitRateMbps)M",
-            "--window-title", "DroidDeck · \(serial)"
+            "--window-title", "DroidCtrl · \(serial)"
         ]
         if maxSize > 0 {
             args.append(contentsOf: ["--max-size", "\(maxSize)"])

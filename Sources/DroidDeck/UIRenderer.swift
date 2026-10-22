@@ -17,7 +17,7 @@ enum RendererPalette {
     static let red = Color(rgb: 0xFF3B30)
 }
 
-/// `DroidDeck --render <yol.png>`: Arayüzü gerçek verilerle PNG olarak
+/// `DroidCtrl --render <yol.png>`: Arayüzü gerçek verilerle PNG olarak
 /// render eder. Ekran kayıt izni olmadan arayüz düzenini doğrulamak için.
 enum UIRenderer {
 

@@ -924,7 +924,7 @@ final class DeviceStore: ObservableObject {
             let panel = NSSavePanel()
             let f = DateFormatter()
             f.dateFormat = "yyyyMMdd-HHmmss"
-            panel.nameFieldStringValue = "DroidDeck-\(f.string(from: Date())).png"
+            panel.nameFieldStringValue = "DroidCtrl-\(f.string(from: Date())).png"
             panel.allowedContentTypes = [.png]
             panel.canCreateDirectories = true
             panel.title = "Ekran Görüntüsünü Kaydet"
@@ -945,21 +945,21 @@ final class DeviceStore: ObservableObject {
         }
     }
 
-    /// DroidDeck'in başlattığı harici scrcpy penceresini kapatır.
+    /// DroidCtrl'in başlattığı harici scrcpy penceresini kapatır.
     ///
     /// NEDEN GEREKLİ: `localabstract:scrcpy` soketi cihaz başına TEK'tir.
     /// Küçük önizleme ile büyük ekran aynı anda çalışamaz.
     ///
     /// YALNIZCA O CİHAZIN penceresi hedeflenir. Daha önce kalıp
-    /// `pkill -f "DroidDeck ·"` tüm cihazların pencerelerini kapatıyordu;
+    /// `pkill -f "DroidCtrl ·"` tüm cihazların pencerelerini kapatıyordu;
     /// iki cihazlı kullanımda birinde önizleme başlatmak diğerinin ekranını
     /// götürüyordu.
     @discardableResult
     func stopExternalScrcpy(for serial: String) -> Bool {
-        // `launchScrcpy` pencere başlığına "DroidDeck · <serial>" koyar.
+        // `launchScrcpy` pencere başlığına "DroidCtrl · <serial>" koyar.
         // pkill -f bunu komut satırında arar — seri de desende olduğu için
         // yalnızca o cihazın penceresi eşleşir.
-        let pattern = "DroidDeck · \(serial)"
+        let pattern = "DroidCtrl · \(serial)"
         let probe = ProcessRunner.run("/usr/bin/pkill",
                                       arguments: ["-f", pattern], timeout: 5)
         return probe.exitCode == 0

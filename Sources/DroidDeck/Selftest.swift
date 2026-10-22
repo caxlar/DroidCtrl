@@ -1,13 +1,13 @@
 import Foundation
 
-/// `DroidDeck --selftest`: Ayrıştırıcıları, gerçek cihazlardan alınmış
+/// `DroidCtrl --selftest`: Ayrıştırıcıları, gerçek cihazlardan alınmış
 /// ham çıktı örnekleriyle doğrular. Ağa veya cihaza dokunmaz.
 enum Selftest {
 
     private static var failures = 0
 
     static func run() -> Never {
-        print("=== DroidDeck selftest ===")
+        print("=== DroidCtrl selftest ===")
 
         testParseDevices()
         testParseMDNSServices()

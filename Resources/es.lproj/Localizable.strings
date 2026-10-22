@@ -1,4 +1,4 @@
-"app_name" = "DroidDeck";
+"app_name" = "DroidCtrl";
 "device_screen" = "Pantalla del Dispositivo";
 "scan_devices" = "Escanear Dispositivos";
 "connect" = "Conectar";
@@ -101,7 +101,7 @@
 "adb_not_found" = "adb no encontrado. Instalar: brew install --cask android-platform-tools";
 "scrcpy_not_found" = "scrcpy no encontrado (brew install scrcpy)";
 "show_main_window" = "Mostrar Ventana Principal";
-"quit_app" = "Salir de DroidDeck";
+"quit_app" = "Salir de DroidCtrl";
 "volume_up" = "Subir Volumen";
 "volume_down" = "Bajar Volumen";
 "about_title" = "Acerca de";
@@ -156,3 +156,14 @@
 "rescan_devices" = "Reescanear dispositivos y servicios mDNS";
 "direct_connect" = "Intenta conexión directa. Los dispositivos emparejados se abren desde aquí.";
 "open_pairing_wizard" = "Abrir asistente de emparejamiento — necesario si el dispositivo no está emparejado.";
+"error_enter_ip_port" = "Ingrese primero una IP:puerto";
+"error_app_not_found" = "App no encontrada: %@";
+"error_button_not_implemented" = "Este botón aún no está implementado: %@";
+"error_unknown_media_command" = "Comando de medios desconocido: %@";
+"error_select_device_first" = "Seleccione primero un dispositivo";
+"status_opening_settings" = "Abriendo aplicación de Configuración…";
+"error_settings_failed" = "No se pudo abrir Configuración: %@";
+"type_text_placeholder" = "Escribir texto…";
+"clear" = "Limpiar";
+"app_list_label" = "Apps";
+"search_app_placeholder" = "Buscar app…";

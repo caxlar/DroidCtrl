@@ -1,4 +1,4 @@
-"app_name" = "DroidDeck";
+"app_name" = "DroidCtrl";
 "device_screen" = "Device Screen";
 "scan_devices" = "Scan Devices";
 "connect" = "Connect";
@@ -101,7 +101,7 @@
 "adb_not_found" = "adb not found. Install: brew install --cask android-platform-tools";
 "scrcpy_not_found" = "scrcpy not found (brew install scrcpy)";
 "show_main_window" = "Show Main Window";
-"quit_app" = "Quit DroidDeck";
+"quit_app" = "Quit DroidCtrl";
 "volume_up" = "Volume Up";
 "volume_down" = "Volume Down";
 "about_title" = "About";
@@ -156,3 +156,14 @@
 "rescan_devices" = "Rescan devices and mDNS services";
 "direct_connect" = "Try direct connect. Paired devices open from here.";
 "open_pairing_wizard" = "Open pairing wizard — needed if device is not paired with this computer.";
+"error_enter_ip_port" = "Please enter an IP:port first";
+"error_app_not_found" = "App not found: %@";
+"error_button_not_implemented" = "This button is not yet implemented: %@";
+"error_unknown_media_command" = "Unknown media command: %@";
+"error_select_device_first" = "Please select a device first";
+"status_opening_settings" = "Opening Settings app…";
+"error_settings_failed" = "Failed to open Settings: %@";
+"type_text_placeholder" = "Type text…";
+"clear" = "Clear";
+"app_list_label" = "Apps";
+"search_app_placeholder" = "Search app…";

@@ -1,4 +1,4 @@
-"app_name" = "DroidDeck";
+"app_name" = "DroidCtrl";
 "device_screen" = "Cihaz Ekranı";
 "scan_devices" = "Cihazları Tara";
 "connect" = "Bağlan";
@@ -101,7 +101,7 @@
 "adb_not_found" = "adb bulunamadı. Kurulum: brew install --cask android-platform-tools";
 "scrcpy_not_found" = "scrcpy yok (brew install scrcpy)";
 "show_main_window" = "Ana Pencereyi Göster";
-"quit_app" = "DroidDeck'ten Çık";
+"quit_app" = "DroidCtrl'ten Çık";
 "volume_up" = "Sesi Aç";
 "volume_down" = "Sesi Kıs";
 "about_title" = "Hakkında";
@@ -156,3 +156,14 @@
 "rescan_devices" = "Cihazları ve mDNS servislerini yeniden tara";
 "direct_connect" = "Doğrudan bağlanmayı dener. Eşleşik cihazlar buradan açılır.";
 "open_pairing_wizard" = "Eşleştirme sihirbazını aç — cihaz bu bilgisayarla eşleşmemişse gerekir.";
+"error_enter_ip_port" = "Önce bir IP:port girin";
+"error_app_not_found" = "Uygulama bulunamadı: %@";
+"error_button_not_implemented" = "Bu düğme henüz geliştirilmedi: %@";
+"error_unknown_media_command" = "Bilinmeyen medya komutu: %@";
+"error_select_device_first" = "Önce bir cihaz seçin";
+"status_opening_settings" = "Ayarlar uygulaması açılıyor…";
+"error_settings_failed" = "Ayarlar açılamadı: %@";
+"type_text_placeholder" = "Metin yazın…";
+"clear" = "Temizle";
+"app_list_label" = "Uygulamalar";
+"search_app_placeholder" = "Uygulama ara…";

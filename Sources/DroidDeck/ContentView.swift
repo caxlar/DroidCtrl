@@ -93,7 +93,7 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .navigationTitle("DroidDeck")
+        .navigationTitle("DroidCtrl")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {

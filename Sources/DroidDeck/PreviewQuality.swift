@@ -5,9 +5,9 @@ import Foundation
 /// Encoder yükü ≈ piksel × kare hızı. Önizleme ~300 pt genişliğinde olduğundan
 /// yüksek çözünürlük kodlamak cihazda gereksiz CPU/ısı üretir.
 enum PreviewQuality: String, CaseIterable, Identifiable {
-    case low = "Düşük"
-    case balanced = "Dengeli"
-    case high = "Yüksek (TV)"
+    case low = "quality_low"
+    case balanced = "quality_balanced"
+    case high = "quality_high"
 
     var id: String { rawValue }
 

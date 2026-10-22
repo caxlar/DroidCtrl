@@ -1,7 +1,7 @@
 //
-//  DashboardHost.swift — DroidDeck
+//  DashboardHost.swift — DroidCtrl
 //
-//  Kullanıcının yeni arayüzünü (TrebleDroidDashboard) DroidDeck'in
+//  Kullanıcının yeni arayüzünü (TrebleDroidDashboard) DroidCtrl'in
 //  gerçek durumu ve işlevleriyle birleştiren sarmalayıcı.
 //
 

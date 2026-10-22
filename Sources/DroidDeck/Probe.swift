@@ -1,12 +1,12 @@
 import Foundation
 
-/// `DroidDeck --probe`: ADB/scrcpy araçlarını ve servis katmanını
+/// `DroidCtrl --probe`: ADB/scrcpy araçlarını ve servis katmanını
 /// gerçek bir cihaza karşı, arayüzü açmadan doğrular.
 /// Yalnızca okuma komutları kullanır; cihazda değişiklik yapmaz.
 enum Probe {
 
     static func run() -> Never {
-        print("=== DroidDeck tanılama ===")
+        print("=== DroidCtrl tanılama ===")
         let fm = FileManager.default
 
         // 1) Araç konumu

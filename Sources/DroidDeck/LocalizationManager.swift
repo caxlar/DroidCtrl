@@ -1,5 +1,5 @@
 //
-//  LocalizationManager.swift — DroidDeck
+//  LocalizationManager.swift — DroidCtrl
 //
 //  String Catalog tabanlı çoklu dil yöneticisi.
 //  SwiftUI'da `Text("key")` otomatik çalışır; runtime dil değiştirme için

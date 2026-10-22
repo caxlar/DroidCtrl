@@ -1,10 +1,10 @@
 #!/bin/bash
-# DroidDeck'i çift tıklanabilir macOS uygulaması olarak paketler.
+# DroidCtrl'i çift tıklanabilir macOS uygulaması olarak paketler.
 # Kullanım:  ./make-app.sh [hedef.yol]
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP_NAME="DroidDeck"
+APP_NAME="DroidCtrl"
 DEST="${1:-/Applications/${APP_NAME}.app}"
 
 # /Applications yazılabilir değilse kullanıcı klasörüne kur.
@@ -19,15 +19,20 @@ swift build -c release
 echo "Paketleniyor: $DEST"
 rm -rf "$DEST"
 mkdir -p "$DEST/Contents/MacOS" "$DEST/Contents/Resources"
-cp .build/release/DroidDeck "$DEST/Contents/MacOS/${APP_NAME}"
+cp .build/release/DroidCtrl "$DEST/Contents/MacOS/${APP_NAME}"
 cp Resources/Info.plist "$DEST/Contents/Info.plist"
-cp Resources/TabletPreview.png "$DEST/Contents/Resources/TabletPreview.png"
+cp /Users/cyetiskin/DroidDeck/Resources/TabletPreview.png "$DEST/Contents/Resources/TabletPreview.png"
+cp /Users/cyetiskin/DroidDeck/Resources/icon.png "$DEST/Contents/Resources/icon.png"
+cp /Users/cyetiskin/DroidDeck/Resources/icon_80pt@1x.png "$DEST/Contents/Resources/icon_80pt@1x.png"
+cp /Users/cyetiskin/DroidDeck/Resources/icon_80pt@2x.png "$DEST/Contents/Resources/icon_80pt@2x.png"
+cp /Users/cyetiskin/DroidDeck/Resources/AppIcon.icns "$DEST/Contents/Resources/AppIcon.icns"
 
 # Localization files
 for lang in en tr es zh-Hans de it; do
     mkdir -p "$DEST/Contents/Resources/${lang}.lproj"
     cp "Resources/${lang}.lproj/Localizable.strings" "$DEST/Contents/Resources/${lang}.lproj/"
 done
+
 
 # --- İmzalama -------------------------------------------------------------
 #

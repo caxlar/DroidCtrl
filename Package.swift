@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "DroidDeck",
+    name: "DroidCtrl",
     platforms: [
         .macOS(.v14)
     ],
     targets: [
         .executableTarget(
-            name: "DroidDeck",
+            name: "DroidCtrl",
             path: "Sources/DroidDeck"
         )
     ],

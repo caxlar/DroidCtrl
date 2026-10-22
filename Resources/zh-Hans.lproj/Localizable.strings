@@ -1,4 +1,4 @@
-"app_name" = "DroidDeck";
+"app_name" = "DroidCtrl";
 "device_screen" = "设备屏幕";
 "scan_devices" = "扫描设备";
 "connect" = "连接";
@@ -101,7 +101,7 @@
 "adb_not_found" = "未找到 adb。安装：brew install --cask android-platform-tools";
 "scrcpy_not_found" = "未找到 scrcpy (brew install scrcpy)";
 "show_main_window" = "显示主窗口";
-"quit_app" = "退出 DroidDeck";
+"quit_app" = "退出 DroidCtrl";
 "volume_up" = "增大音量";
 "volume_down" = "减小音量";
 "about_title" = "关于";
@@ -156,3 +156,14 @@
 "rescan_devices" = "重新扫描设备和 mDNS 服务";
 "direct_connect" = "尝试直接连接。已配对设备从此处打开。";
 "open_pairing_wizard" = "打开配对向导 — 如果设备未与电脑配对则需要。";
+"error_enter_ip_port" = "请先输入 IP:端口";
+"error_app_not_found" = "未找到应用：%@";
+"error_button_not_implemented" = "此按钮尚未实现：%@";
+"error_unknown_media_command" = "未知媒体命令：%@";
+"error_select_device_first" = "请先选择设备";
+"status_opening_settings" = "正在打开设置应用…";
+"error_settings_failed" = "打开设置失败：%@";
+"type_text_placeholder" = "输入文本…";
+"clear" = "清除";
+"app_list_label" = "应用";
+"search_app_placeholder" = "搜索应用…";

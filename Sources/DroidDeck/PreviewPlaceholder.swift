@@ -1,5 +1,5 @@
 //
-//  PreviewPlaceholder.swift — DroidDeck
+//  PreviewPlaceholder.swift — DroidCtrl
 //
 //  Önizleme KAPALIYKEN ekran alanında gösterilen yer tutucu.
 //

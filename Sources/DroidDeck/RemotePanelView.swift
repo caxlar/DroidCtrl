@@ -34,7 +34,7 @@ struct RemotePanelView: View {
                 }
             }
         }
-        .navigationTitle(store.selectedDevice?.displayName ?? "DroidDeck")
+        .navigationTitle(store.selectedDevice?.displayName ?? "DroidCtrl")
     }
 }
 
@@ -403,7 +403,7 @@ struct TextCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                TextField("Metin yazın…", text: $text)
+            TextField(LocalizedStringKey("type_text_placeholder"), text: $text)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit {
                         store.sendText(text)
