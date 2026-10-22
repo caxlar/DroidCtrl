@@ -54,6 +54,9 @@ final class DashboardBridge: ObservableObject {
             autoLoadedForDevice = device.serial
             store.loadApps()
         }
+
+        // Pil anında gelsin — telemetry beklemek yerine doğrudan çek.
+        store.fetchBattery()
     }
 
     /// Önizlemeyi aç/kapat. Kullanıcı çağırdığında.

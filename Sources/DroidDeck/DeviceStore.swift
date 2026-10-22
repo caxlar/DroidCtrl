@@ -18,9 +18,7 @@ final class DeviceStore: ObservableObject {
     @Published var adbPath: String?
     @Published var scrcpyPath: String?
 
-    @Published var selectedDeviceID: String? {
-        didSet { syncTelemetry() }
-    }
+    @Published var selectedDeviceID: String?
 
     @Published var apps: [AndroidApp] = []
     @Published var isLoadingApps = false
@@ -689,6 +687,21 @@ final class DeviceStore: ObservableObject {
             DispatchQueue.main.async {
                 guard self.selectedDevice?.serial == serial else { return }
                 self.unlockStatus = steps.joined(separator: "\n")
+            }
+        }
+    }
+
+    /// Sadece pil ve sıcaklık getirir — tam telemetry YOK.
+    /// Cihaz seçildiğinde anında çağrılır; istersen periyodik de tetikleyebilirsin.
+    func fetchBattery() {
+        guard let adb, let device = selectedDevice else { return }
+        let serial = device.serial
+        DispatchQueue.global(qos: .utility).async {
+            let info = adb.batteryInfo(serial: serial)
+            DispatchQueue.main.async {
+                guard self.selectedDevice?.serial == serial else { return }
+                self.batteryLevel = info.levelPercent
+                self.deviceTemperature = info.temperatureC
             }
         }
     }
