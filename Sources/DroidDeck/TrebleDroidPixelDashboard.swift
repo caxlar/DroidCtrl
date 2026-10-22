@@ -16,6 +16,8 @@ private enum Palette {
     static let outline = Color.white.opacity(0.095)
     static let blue = Color(rgb: 0x1478FF)
     static let green = Color(rgb: 0x19DC74)
+    static let orange = Color(rgb: 0xFF9500)
+    static let red = Color(rgb: 0xFF3B30)
 }
 private extension Color {
     init(rgb: UInt32) {
