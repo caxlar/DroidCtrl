@@ -277,7 +277,7 @@ struct PreviewCard: View {
                             .buttonStyle(.plain)
                             .help("Önizlemeyi başlat")
 
-                            Text("Ekranı Göster")
+                            Text("show_screen")
                                 .font(.caption)
                                 .foregroundStyle(.white.opacity(0.75))
                         }
