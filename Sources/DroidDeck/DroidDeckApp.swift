@@ -94,12 +94,12 @@ struct DroidDeckApp: App {
             // Yeni pencere komutunu kaldırıyoruz: tek bir kumanda penceresi yeterli.
             CommandGroup(replacing: .newItem) {}
             CommandGroup(after: .appInfo) {
-                Button("ADB Sunucusunu Yeniden Başlat") {
+                Button("restart_adb") {
                     store.restartADBServer()
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
 
-                Button("Araç Yollarını Yenile") {
+                Button("reload_tool_paths") {
                     store.reloadToolPaths()
                 }
             }

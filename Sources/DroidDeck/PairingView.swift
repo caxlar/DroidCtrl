@@ -15,7 +15,7 @@ struct PairingInstructions: View {
 
     private var intro: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Bu işlem neden gerekiyor?")
+            Text("why_pairing_needed")
                 .font(.headline)
             Text("""
             Android, bir cihazı bir bilgisayara ilk kez bağladığında güvenlik için **eşleştirme** ister. \
@@ -110,7 +110,7 @@ struct PairingInstructions: View {
 
     private var troubleshooting: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Sorun yaşıyorsanız", systemImage: "lifepreserver")
+            Label("having_trouble", systemImage: "lifepreserver")
                 .font(.headline)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -173,7 +173,7 @@ struct PairingView: View {
                 .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Cihaz Eşleştirme")
+                Text("device_pairing")
                     .font(.title3.weight(.semibold))
                 if !store.pairingTargetIP.isEmpty {
                     Text("Hedef: \(store.pairingTargetIP)")
@@ -219,7 +219,7 @@ struct PairingView: View {
                 if store.pairingService != nil {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(.green)
-                        .help("Telefondaki eşleştirme penceresi bulundu")
+                        .help("pairing_window_found")
                 }
             }
 
@@ -235,7 +235,7 @@ struct PairingView: View {
                 Button {
                     store.submitPairingCode()
                 } label: {
-                    Label("Eşleştir", systemImage: "link.badge.plus")
+                    Label("pair", systemImage: "link.badge.plus")
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
@@ -249,21 +249,21 @@ struct PairingView: View {
 
                 Spacer()
 
-                Button("İptal") {
+                Button("cancel") {
                     store.cancelPairing()
                 }
                 .controlSize(.large)
             }
 
             if store.pairingService == nil && !store.pairingFinished {
-                Label("Eşleştirme penceresi henüz bulunamadı. Telefonda 3. adımı uygulayın — bulununca üstteki nokta yeşile döner.",
+                Label("pairing_window_not_found",
                       systemImage: "exclamationmark.triangle")
                     .font(.caption)
                     .foregroundStyle(.orange)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            Text("Kod yalnızca bu eşleşme için geçerlidir; kaydedilmez ve kimseyle paylaşılmaz.")
+            Text("code_single_use")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

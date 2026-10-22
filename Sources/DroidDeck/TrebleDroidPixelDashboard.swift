@@ -365,7 +365,7 @@ struct TrebleDroidPixelDashboard: View {
 
             // Bakım.
             VStack(alignment: .leading, spacing: 8) {
-                Label("Bakım", systemImage: "wrench.and.screwdriver")
+                Label("maintenance", systemImage: "wrench.and.screwdriver")
                     .font(.system(size: 13, weight: .semibold))
                 primaryButton("reset_labels", icon: "arrow.counterclockwise") {
                     actions.command("resetLabels")
@@ -628,7 +628,7 @@ struct TrebleDroidPixelDashboard: View {
                 .textFieldStyle(.plain).padding(12)
                 .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
             HStack {
-                primaryButton("Gönder") { actions.command("type:\(keyboardText)") }
+                primaryButton("send") { actions.command("type:\(keyboardText)") }
                 primaryButton("Temizle") { keyboardText = "" }
             }
             quickAction("enter_key", "return", "enter")
@@ -667,7 +667,7 @@ struct TrebleDroidPixelDashboard: View {
                     .padding(9).frame(height: 38)
                     .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
                     .strokePanel(8)
-                primaryButton("Cihazda Aç", icon: "link") {
+                primaryButton("open_on_device", icon: "link") {
                     actions.command("sendURL:\(urlText)")
                 }
             }
@@ -704,7 +704,7 @@ struct TrebleDroidPixelDashboard: View {
                                     .foregroundStyle(Palette.textMuted).lineLimit(1)
                             }
                             Spacer(minLength: 0)
-                            Button("Aç") { actions.openApp(app) }
+                            Button("open") { actions.openApp(app) }
                                 .font(.system(size: 12))
                                 .buttonStyle(.plain)
                                 .frame(width: 52, height: 35)

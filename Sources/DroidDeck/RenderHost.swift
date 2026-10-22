@@ -44,7 +44,7 @@ struct SidebarPreview: View {
                 DeviceRow(device: device)
             }
 
-            Text("Ağda Bulunanlar (mDNS)")
+            Text("render_found_mdns")
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .padding(.top, 6)
@@ -53,7 +53,7 @@ struct SidebarPreview: View {
                 MDNSRow(service: service)
             }
 
-            Text("Elle Bağlan")
+            Text("render_manual_connect")
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .padding(.top, 6)

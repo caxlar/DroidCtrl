@@ -126,7 +126,7 @@ struct UnlockPanel: View {
             Button {
                 store.wakeAndUnlock()
             } label: {
-                Label("Ekranı Aç / Kilidi Aç", systemImage: "lock.open")
+                Label("wake_unlock", systemImage: "lock.open")
             }
             .disabled(store.selectedDevice == nil)
 
@@ -151,7 +151,7 @@ struct LinkPanel: View {
                 TextField("https://…", text: $text)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit(send)
-                Button("Cihazda Aç", action: send)
+                Button("open_on_device", action: send)
                     .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }

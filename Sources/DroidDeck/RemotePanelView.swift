@@ -65,10 +65,10 @@ struct RemotePanelContent: View {
                 Button {
                     store.recoverConnection()
                 } label: {
-                    Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
+                    Label("repair_connection", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .controlSize(.small)
-                .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
+                .help("repair_connection_help")
             }
 
             Card(title: "Hızlı Erişim", icon: "bolt") {
@@ -275,7 +275,7 @@ struct PreviewCard: View {
                                     .foregroundStyle(.white.opacity(0.92))
                             }
                             .buttonStyle(.plain)
-                            .help("Önizlemeyi başlat")
+                            .help("start_preview_help")
 
                             Text("show_screen")
                                 .font(.caption)
@@ -296,7 +296,7 @@ struct PreviewCard: View {
                                     .background(Color.black.opacity(0.55), in: Circle())
                             }
                             .buttonStyle(.plain)
-                            .help("Büyüt — tam pencereyi açar")
+                            .help("fullscreen_help")
                         }
                         Spacer()
                     }
@@ -326,12 +326,12 @@ struct PreviewCard: View {
                             Label("Yenile", systemImage: "arrow.clockwise")
                         }
                         .controlSize(.small)
-                        .help("Yayını kesip yeniden başlatır — takılan akışı toparlamak için")
+                        .help("restart_preview_help")
                     } else {
                         Button {
                             store.startPreview()
                         } label: {
-                            Label("Ekranı Göster", systemImage: "play.fill")
+                            Label("show_screen", systemImage: "play.fill")
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)
@@ -340,7 +340,7 @@ struct PreviewCard: View {
                     Button {
                         store.openScrcpy()
                     } label: {
-                        Label("Büyüt", systemImage: "arrow.up.left.and.arrow.down.right")
+                        Label("zoom", systemImage: "arrow.up.left.and.arrow.down.right")
                     }
                     .controlSize(.small)
 
@@ -352,7 +352,7 @@ struct PreviewCard: View {
                                   ? "thermometer.high" : "thermometer.medium")
                             .font(.caption2)
                             .foregroundStyle(temperature >= ThermalLimit.warnCelsius ? Color.orange : Color.secondary)
-                            .help("Cihaz sıcaklığı. \(ThermalLimit.stopCelsius)°C üstünde yayın güvenlik için otomatik durur.")
+                            .help(String(format: NSLocalizedString("thermal_info", comment: ""), ThermalLimit.stopCelsius))
                     }
 
                     if !store.previewStatus.isEmpty {
@@ -364,7 +364,7 @@ struct PreviewCard: View {
 
                 // Cihaza bindirilen yük — encoder yükü ≈ piksel × kare hızı.
                 HStack(spacing: 8) {
-                    Text("Cihaz yükü:")
+                    Text("device_load")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
 
@@ -384,10 +384,10 @@ struct PreviewCard: View {
 
                     Spacer()
                 }
-                .help("Düşük kalite cihazda belirgin biçimde daha az ısı ve pil tüketimi yapar.")
-            }
-        }
-    }
+                            .help("quality_low_desc")
+                        }
+                    }
+                }
 }
 
 // MARK: - Klavye kartı
@@ -399,7 +399,7 @@ struct TextCard: View {
     var body: some View {
         Card(title: "Klavye", icon: "keyboard.fill") {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Cihazda odaklı alana yazar.")
+                Text("write_focused")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -411,7 +411,7 @@ struct TextCard: View {
                     }
 
                 HStack(spacing: 8) {
-                    Button("Gönder") {
+                    Button("send") {
                         store.sendText(text)
                         text = ""
                     }
@@ -425,7 +425,7 @@ struct TextCard: View {
 
                 Divider().padding(.vertical, 2)
 
-                Text("Kısayollar")
+                Text("shortcuts")
                     .font(.caption.weight(.semibold))
 
                 HStack(spacing: 10) {
@@ -471,7 +471,7 @@ struct AppsCard: View {
                     }
                     .controlSize(.small)
                     .disabled(store.isLoadingApps || store.selectedDevice?.state.isControllable != true)
-                    .help("Etiket önbelleğini sıfırlar — uygulama güncellendiyse adlar yeniden okunur")
+                    .help("reset_labels_help")
 
                     if store.isLoadingApps {
                         ProgressView()
@@ -488,7 +488,7 @@ struct AppsCard: View {
                 .background(Color.gray.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
 
                 if store.apps.isEmpty {
-                    Text("Uygulama listesi boş. 'Listele' ile ana ekrandaki uygulamaları çekin.")
+                    Text("app_list_empty")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -530,9 +530,9 @@ struct AppTile: View {
         }
         .buttonStyle(.plain)
         .contextMenu {
-            Button("Aç") { store.launch(app) }
+            Button("open") { store.launch(app) }
             Button("Durdur") { store.forceStop(app) }
-            Button("Paket Adını Kopyala") {
+            Button("copy_package_name") {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(app.packageName, forType: .string)
             }

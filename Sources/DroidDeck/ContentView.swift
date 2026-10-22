@@ -30,14 +30,14 @@ struct SidebarView: View {
         List(selection: $store.selectedDeviceID) {
             Section("Cihazlar") {
                 if store.devices.isEmpty {
-                    Label("Kayıtlı cihaz yok", systemImage: "questionmark.circle")
+                    Label("no_saved_devices", systemImage: "questionmark.circle")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(store.devices) { device in
                     DeviceRow(device: device)
                         .tag(device.id)
                         .contextMenu {
-                            Button("Bağlantıyı Kes") {
+                            Button("disconnect") {
                                 store.disconnect(device)
                             }
                             .disabled(device.connection != .wifi)
@@ -47,7 +47,7 @@ struct SidebarView: View {
 
             Section("Ağda Bulunanlar (mDNS)") {
                 if store.undiscoveredMDNS.isEmpty {
-                    Text("mDNS servisi görünmüyor")
+                    Text("mdns_not_visible")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(store.undiscoveredMDNS) { service in
@@ -65,7 +65,7 @@ struct SidebarView: View {
                         Button {
                             store.connect(to: store.manualEndpoint)
                         } label: {
-                            Label("Bağlan", systemImage: "link")
+                            Label("connect", systemImage: "link")
                         }
                         .buttonStyle(.bordered)
                         .disabled(store.manualEndpoint.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -77,18 +77,18 @@ struct SidebarView: View {
                                 .trimmingCharacters(in: .whitespaces) ?? ""
                             store.beginPairing(ip: ip)
                         } label: {
-                            Label("Eşleştir", systemImage: "link.badge.plus")
+                            Label("pair_with_device", systemImage: "link.badge.plus")
                         }
                         .buttonStyle(.borderedProminent)
-                        .help("İlk kez bağlanıyorsanız eşleştirme gerekir. Adımlar sihirbazda anlatılır.")
+                        .help("pairing_first_time")
                     }
 
-                    Text("Telefon/tablet: **Kablosuz hata ayıklama** açık olmalı ve port 5555 değil, rastgele bir sayıdır. En kolayı sağdaki listeden **Eşleştir**'e basmak. Android TV'lerde genelde IP:5555 kullanılır.")
+                    Text("wireless_debugging_help")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 } label: {
-                    Label("Elle Bağlan", systemImage: "network")
+                    Label("manual_connect", systemImage: "network")
                 }
             }
         }
@@ -102,7 +102,7 @@ struct SidebarView: View {
                     Label("Yenile", systemImage: "arrow.clockwise")
                 }
                 .disabled(store.isScanning)
-                .help("Cihazları ve mDNS servislerini yeniden tara")
+                .help("rescan_devices")
             }
         }
     }
@@ -164,12 +164,12 @@ struct MDNSRow: View {
             Spacer(minLength: 4)
 
             HStack(spacing: 4) {
-                Button("Bağlan") {
+                Button("connect") {
                     store.connect(service)
                 }
                 .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .help("Doğrudan bağlanmayı dener. Eşleşik cihazlar buradan açılır.")
+                                .controlSize(.small)
+                                .help("direct_connect")
 
                 Button {
                     store.beginPairing(ip: service.host)
@@ -177,7 +177,7 @@ struct MDNSRow: View {
                     Image(systemName: "link.badge.plus")
                 }
                 .controlSize(.small)
-                .help("Eşleştirme sihirbazını aç — cihaz bu bilgisayarla eşleşmemişse gerekir.")
+                .help("open_pairing_wizard")
             }
         }
         .padding(.vertical, 2)
