@@ -1,0 +1,526 @@
+{
+  "version": "1.0",
+  "sourceLanguage": "en",
+  "strings": {
+    "app_name": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "DroidDeck"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "DroidDeck"}},
+        "es": {"stringUnit": {"state": "translated", "value": "DroidDeck"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "DroidDeck"}},
+        "de": {"stringUnit": {"state": "translated", "value": "DroidDeck"}},
+        "it": {"stringUnit": {"state": "translated", "value": "DroidDeck"}}
+      }
+    },
+    "device_screen": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Device Screen"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Cihaz Ekranı"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Pantalla del Dispositivo"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "设备屏幕"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Gerätebildschirm"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Schermo Dispositivo"}}
+      }
+    },
+    "scan_devices": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Scan Devices"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Cihazları Tara"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Escanear Dispositivos"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "扫描设备"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Geräte scannen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Scansiona Dispositivi"}}
+      }
+    },
+    "connect": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Connect"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Bağlan"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Conectar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "连接"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Verbinden"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Connetti"}}
+      }
+    },
+    "disconnect": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Disconnect"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Bağlantıyı Kes"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Desconectar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "断开连接"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Trennen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Disconnetti"}}
+      }
+    },
+    "quality_low": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Low"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Düşük"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Bajo"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "低"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Niedrig"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Basso"}}
+      }
+    },
+    "quality_balanced": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Balanced"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dengeli"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Equilibrado"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "平衡"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Ausgewogen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Bilanciato"}}
+      }
+    },
+    "quality_high": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "High (TV)"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Yüksek (TV)"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Alto (TV)"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "高 (TV)"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Hoch (TV)"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Alto (TV)"}}
+      }
+    },
+    "preview_play": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Play"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Oynat"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Reproducir"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "播放"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Start"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Riproduci"}}
+      }
+    },
+    "preview_stop": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Stop"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Durdur"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Detener"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "停止"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Stopp"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Ferma"}}
+      }
+    },
+    "battery": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Battery"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Pil"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Batería"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "电池"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Akku"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Batteria"}}
+      }
+    },
+    "temperature": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Temperature"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Sıcaklık"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Temperatura"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "温度"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Temperatur"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Temperatura"}}
+      }
+    },
+    "settings": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Settings"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Ayarlar"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Ajustes"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "设置"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Einstellungen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Impostazioni"}}
+      }
+    },
+    "about": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "About"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Hakkında"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Acerca de"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "关于"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Info"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Informazioni"}}
+      }
+    },
+    "device_connected": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Connected"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Bağlı"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Conectado"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "已连接"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Verbunden"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Connesso"}}
+      }
+    },
+    "device_ready": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Ready"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Hazır"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Listo"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "就绪"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Bereit"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Pronto"}}
+      }
+    },
+    "language": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Language"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dil"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Idioma"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "语言"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Sprache"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Lingua"}}
+      }
+    },
+    "select_language": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Select Language"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dil Seç"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Seleccionar Idioma"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "选择语言"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Sprache auswählen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Seleziona Lingua"}}
+      }
+    },
+    "language_english": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "English"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "İngilizce"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Inglés"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "英语"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Englisch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Inglese"}}
+      }
+    },
+    "language_turkish": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Turkish"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Türkçe"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Turco"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "土耳其语"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Türkisch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Turco"}}
+      }
+    },
+    "language_spanish": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Spanish"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "İspanyolca"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Español"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "西班牙语"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Spanisch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Spagnolo"}}
+      }
+    },
+    "language_chinese": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Chinese"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Çince"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Chino"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "中文"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Chinesisch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Cinese"}}
+      }
+    },
+    "language_german": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "German"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Almanca"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Alemán"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "德语"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Deutsch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Tedesco"}}
+      }
+    },
+    "language_italian": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Italian"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "İtalyanca"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Italiano"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "意大利语"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Italienisch"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Italiano"}}
+      }
+    },
+    "restart_required": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Language changed. Please restart the app."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dil değiştirildi. Lütfen uygulamayı yeniden başlatın."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Idioma cambiado. Por favor reinicie la aplicación."}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "语言已更改。请重启应用程序。"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Sprache geändert. Bitte starten Sie die App neu."}},
+        "it": {"stringUnit": {"state": "translated", "value": "Lingua modificata. Riavvia l'app."}}
+      }
+    },
+    "wake_unlock": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Wake & Unlock"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Ekranı Uyandır"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Despertar y Desbloquear"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "唤醒解锁"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Aufwecken & Entsperren"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Sveglia e Sblocca"}}
+      }
+    },
+    "screenshot": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Screenshot"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Ekran Görüntüsü"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Captura de Pantalla"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "截图"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Screenshot"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Screenshot"}}
+      }
+    },
+    "toggle_screen": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Toggle Screen"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Ekranı Aç/Kapat"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Activar/Desactivar Pantalla"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "切换屏幕"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Bildschirm umschalten"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Attiva/Disattiva Schermo"}}
+      }
+    },
+    "install_apk": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Install APK"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "APK Yükle"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Instalar APK"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "安装 APK"}},
+        "de": {"stringUnit": {"state": "translated", "value": "APK installieren"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Installa APK"}}
+      }
+    },
+    "file_transfer": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "File Transfer"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Dosya Aktar"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Transferir Archivos"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "文件传输"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Dateiübertragung"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Trasferimento File"}}
+      }
+    },
+    "fullscreen": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Fullscreen"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Tam Ekran"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Pantalla Completa"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "全屏"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Vollbild"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Schermo Intero"}}
+      }
+    },
+    "refresh": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Refresh"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Yenile"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Actualizar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "刷新"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Aktualisieren"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Aggiorna"}}
+      }
+    },
+    "zoom_in": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Zoom In"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Yakınlaştır"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Acercar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "放大"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Vergrößern"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Zoom Avanti"}}
+      }
+    },
+    "zoom_out": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Zoom Out"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Uzaklaştır"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Alejar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "缩小"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Verkleinern"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Zoom Indietro"}}
+      }
+    },
+    "device_info": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Device Info"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Cihaz Bilgileri"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Info del Dispositivo"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "设备信息"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Geräteinformationen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Info Dispositivo"}}
+      }
+    },
+    "reboot_device": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Reboot Device"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Cihazı Yeniden Başlat"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Reiniciar Dispositivo"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "重启设备"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Gerät neu starten"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Riavvia Dispositivo"}}
+      }
+    },
+    "reset_labels": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Reset Labels"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Etiketleri Sıfırla"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Restablecer Etiquetas"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "重置标签"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Labels zurücksetzen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Ripristina Etichette"}}
+      }
+    },
+    "restart_adb": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Restart ADB Server"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "ADB Sunucusunu Yenile"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Reiniciar Servidor ADB"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "重启 ADB 服务器"}},
+        "de": {"stringUnit": {"state": "translated", "value": "ADB Server neu starten"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Riavvia Server ADB"}}
+      }
+    },
+    "thermal_protection": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Thermal Protection"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Termal Koruma"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Protección Térmica"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "热保护"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Thermalschutz"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Protezione Termica"}}
+      }
+    },
+    "thermal_warning": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "High temperature warning at %d°C. Auto-stop at %d°C."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "%d°C'de yüksek sıcaklık uyarısı. %d°C'de otomatik durdurma."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Advertencia de alta temperatura a %d°C. Detención automática a %d°C."}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "%d°C 高温警告。%d°C 自动停止。"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Hohe Temperaturwarnung bei %d°C. Autostop bei %d°C."}},
+        "it": {"stringUnit": {"state": "translated", "value": "Avviso alta temperatura a %d°C. Arresto automatico a %d°C."}}
+      }
+    },
+    "preview_placeholder": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Click to View Screen"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Ekranı Görüntülemek İçin Tıklayın"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Haz clic para ver la pantalla"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "点击查看屏幕"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Klicken für Bildschirm"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Clicca per visualizzare lo schermo"}}
+      }
+    },
+    "manual_connect": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Manual Connect"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Elle Bağlan"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Conexión Manual"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "手动连接"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Manuell verbinden"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Connessione Manuale"}}
+      }
+    },
+    "ip_placeholder": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "IP address (e.g. 192.168.1.4:5555)"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "IP adresi (örn. 192.168.1.4:5555)"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Dirección IP (ej. 192.168.1.4:5555)"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "IP 地址 (例如 192.168.1.4:5555)"}},
+        "de": {"stringUnit": {"state": "translated", "value": "IP-Adresse (z.B. 192.168.1.4:5555)"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Indirizzo IP (es. 192.168.1.4:5555)"}}
+      }
+    },
+    "enter_first": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Enter IP:port first"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Önce IP:port girin"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Ingrese IP:puerto primero"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "请先输入 IP:端口"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Zuerst IP:Port eingeben"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Inserisci prima IP:porta"}}
+      }
+    },
+    "connecting": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Connecting..."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Bağlanılıyor..."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Conectando..."}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "连接中..."}},
+        "de": {"stringUnit": {"state": "translated", "value": "Verbinde..."}},
+        "it": {"stringUnit": {"state": "translated", "value": "Connessione..."}}
+      }
+    },
+    "pairing": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Pairing..."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Eşleştirme..."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Emparejando..."}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "配对中..."}},
+        "de": {"stringUnit": {"state": "translated", "value": "Koppeln..."}},
+        "it": {"stringUnit": {"state": "translated", "value": "Associazione..."}}
+      }
+    },
+    "pairing_code": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Pairing Code"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Eşleştirme Kodu"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Código de Emparejamiento"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "配对码"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Kopplungscode"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Codice di Associazione"}}
+      }
+    },
+    "enter_code": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Enter Code"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Kodu Gir"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Ingresar Código"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "输入代码"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Code eingeben"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Inserisci Codice"}}
+      }
+    },
+    "cancel": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Cancel"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "İptal"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Cancelar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "取消"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Abbrechen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Annulla"}}
+      }
+    },
+    "retry": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Retry"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Tekrar Dene"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Reintentar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "重试"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Wiederholen"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Riprova"}}
+      }
+    },
+    "error": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Error"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Hata"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Error"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "错误"}},
+        "de": {"stringUnit": {"state": "translated", "value": "Fehler"}},
+        "it": {"stringUnit": {"state": "translated", "value": "Errore"}}
+      }
+    },
+    "ok": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "OK"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Tamam"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Aceptar"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "确定"}},
+        "de": {"stringUnit": {"state": "translated", "value": "OK"}},
+        "it": {"stringUnit": {"state": "translated", "value": "OK"}}
+      }
+    }
+  }
+}

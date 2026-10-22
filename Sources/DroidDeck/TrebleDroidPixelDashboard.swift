@@ -309,20 +309,45 @@ struct TrebleDroidPixelDashboard: View {
 
     // MARK: - Kenar çubuğu bölümleri
 
-    /// "Ayarlar" — önizleme kalitesi, termal koruma, etiket önbelleği.
+    /// "Ayarlar" — önizleme kalitesi, termal koruma, dil, etiket önbelleği.
     private var settingsPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        @EnvironmentObject var localization: LocalizationManager
+        return VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Ayarlar").font(.system(size: 19, weight: .bold))
+                Text("settings").font(.system(size: 19, weight: .bold))
                 Spacer()
             }
-            Text("Önizleme, termal koruma ve veri önbelleği.")
+            Text("Önizleme, termal koruma, dil ve veri önbelleği.")
                 .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 .fixedSize(horizontal: false, vertical: true)
 
+            // Dil seçici.
+            VStack(alignment: .leading, spacing: 8) {
+                Label("language", systemImage: "globe")
+                    .font(.system(size: 13, weight: .semibold))
+                Picker("select_language", selection: $localization.currentLanguage) {
+                    ForEach(localization.supportedLanguages) { lang in
+                        HStack {
+                            Text(lang.flag)
+                            Text(lang.nativeName)
+                        }
+                        .tag(lang.id)
+                    }
+                }
+                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                if localization.needsRestart {
+                    Text("restart_required")
+                        .font(.system(size: 10))
+                        .foregroundStyle(Palette.orange)
+                }
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
             // Termal koruma durumu.
             VStack(alignment: .leading, spacing: 8) {
-                Label("Termal Koruma", systemImage: "thermometer.medium")
+                Label("thermal_protection", systemImage: "thermometer.medium")
                     .font(.system(size: 13, weight: .semibold))
                 Text("Sıcaklık ≥ 45°C olursa önizleme otomatik durur. ≥ 40°C'de uyarı verilir.")
                     .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
@@ -335,10 +360,10 @@ struct TrebleDroidPixelDashboard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label("Bakım", systemImage: "wrench.and.screwdriver")
                     .font(.system(size: 13, weight: .semibold))
-                primaryButton("Etiketleri Sıfırla", icon: "arrow.counterclockwise") {
+                primaryButton("reset_labels", icon: "arrow.counterclockwise") {
                     actions.command("resetLabels")
                 }
-                primaryButton("ADB Sunucusunu Yenile", icon: "arrow.triangle.2.circlepath") {
+                primaryButton("restart_adb", icon: "arrow.triangle.2.circlepath") {
                     actions.command("restartADB")
                 }
             }

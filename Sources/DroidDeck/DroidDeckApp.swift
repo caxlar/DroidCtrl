@@ -25,12 +25,15 @@ struct DroidDeckApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var store: DeviceStore
     @StateObject private var bridge: DashboardBridge
+    @StateObject private var localization = LocalizationManager.shared
 
     init() {
         // Köprü gerçek store'a bağlanır — sahte/ikinci bir store ÜRETİLMEZ.
         let s = DeviceStore()
         _store = StateObject(wrappedValue: s)
         _bridge = StateObject(wrappedValue: DashboardBridge(store: s))
+        // LocalizationManager singleton — @StateObject ile yaşam döngüsü yönetilir.
+        _localization = StateObject(wrappedValue: LocalizationManager.shared)
         // Tanılama modları arayüz açmadan çalışır:
         //   DroidDeck --selftest       ayrıştırıcı testleri (cihaza dokunmaz)
         //   DroidDeck --probe          gerçek cihaza karşı okuma testleri
@@ -79,6 +82,7 @@ struct DroidDeckApp: App {
         WindowGroup("DroidDeck") {
             DashboardHost(store: store, bridge: bridge)
                 .environmentObject(store)
+                .environmentObject(localization)
                 .task {
                     appDelegate.store = store
                     store.refresh()
