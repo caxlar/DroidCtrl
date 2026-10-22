@@ -184,18 +184,18 @@ final class DeviceStore: ObservableObject {
                 // keşfedilen (bağlanmaya hazır) cihazları görür.
                 var merged = foundDevices
                 for svc in foundServices where svc.isSecureConnect {
-                    // Bu servis zaten bağlı cihazlarda var mı?
-                    let already = foundDevices.contains { $0.serial == svc.endpoint }
-                    if !already {
-                        merged.append(AndroidDevice(
-                            serial: svc.endpoint,
-                            state: .ready,   // bağlanmaya hazır
-                            model: svc.name,
-                            product: nil,
-                            transportID: nil
-                        ))
-                    }
-                }
+                                    // Bu servis zaten bağlı cihazlarda var mı?
+                                    let already = foundDevices.contains { $0.serial == svc.endpoint }
+                                    if !already {
+                                        merged.append(AndroidDevice(
+                                            serial: svc.endpoint,
+                                            state: .ready,
+                                            model: svc.instance,
+                                            product: nil,
+                                            transportID: nil
+                                        ))
+                                    }
+                                }
                 self.devices = merged
 
                 if let selected = self.selectedDeviceID,
