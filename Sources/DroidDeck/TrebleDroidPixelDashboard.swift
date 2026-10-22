@@ -89,7 +89,7 @@ struct TrebleDroidPixelDashboard: View {
     /// Kullanıcının istediği gibi: sürekli açık kalmaz, kullanıcı açar/kapatır.
     var previewActive: Bool = false
     /// Sol kenar çubuğu seçimi — hangi panelin gösterildiğini belirler.
-    var sidebarSection: String = "Cihazlar"
+    @State var sidebarSection: String = "devices"
     /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
     @State var currentQuality: String = "Dengeli"
     /// LocalizationManager — dil değiştirme için.
@@ -166,8 +166,8 @@ struct TrebleDroidPixelDashboard: View {
                         .frame(width: 48, height: 48)
                         .background(Palette.blue.gradient, in: RoundedRectangle(cornerRadius: 12))
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("TrebleDroid").font(.system(size: 21, weight: .bold))
-                        Text("Android Cihaz Kontrol Merkezi").foregroundStyle(Palette.textMuted)
+                        Text("trebledroid").font(.system(size: 21, weight: .bold))
+                        Text("android_control_center").foregroundStyle(Palette.textMuted)
                     }
                 }
             }
@@ -178,8 +178,8 @@ struct TrebleDroidPixelDashboard: View {
                     .frame(width: 44, height: 48)
                     .background(Palette.raised, in: RoundedRectangle(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(selectedDevice?.id ?? "Cihaz seçilmedi").font(.system(size: 17, weight: .semibold))
-                    Text(selectedDevice?.address ?? "Bağlantı yok").foregroundStyle(Palette.textMuted)
+                    Text(selectedDevice?.id ?? "device_not_selected").font(.system(size: 17, weight: .semibold))
+                    Text(selectedDevice?.address ?? "no_connection").foregroundStyle(Palette.textMuted)
                 }
                 statusChip
                 separator
@@ -214,7 +214,7 @@ struct TrebleDroidPixelDashboard: View {
     private var statusChip: some View {
         HStack(spacing: 8) {
             Circle().fill(Palette.green).frame(width: 10, height: 10)
-            Text(selectedDevice?.connected == true ? "Bağlı" : "Hazır")
+            Text(selectedDevice?.connected == true ? "device_connected" : "device_ready")
                 .fontWeight(.semibold).foregroundStyle(Palette.green)
         }
         .padding(.horizontal, 16).frame(height: 35)
@@ -223,16 +223,16 @@ struct TrebleDroidPixelDashboard: View {
 
     private var globalSidebar: some View {
         VStack(alignment: .leading, spacing: 9) {
-            sidebarLink("Cihazlar", icon: "iphone", selected: sidebarSection == "Cihazlar", count: devices.count)
-            sidebarLink("Ayarlar", icon: "gearshape", selected: sidebarSection == "Ayarlar")
-            sidebarLink("Hakkında", icon: "info.circle", selected: sidebarSection == "Hakkında")
+            sidebarLink("devices", icon: "iphone", selected: sidebarSection == "devices", count: devices.count)
+            sidebarLink("settings", icon: "gearshape", selected: sidebarSection == "settings")
+            sidebarLink("about", icon: "info.circle", selected: sidebarSection == "about")
             Spacer()
             HStack(spacing: 9) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(Palette.green).font(.system(size: 25))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("ADB Servisi").fontWeight(.semibold)
-                    Text("adb ve scrcpy hazır").font(.system(size: 11)).foregroundStyle(Palette.textMuted)
+                    Text("adb_service").fontWeight(.semibold)
+                    Text("adb_scrcpy_ready").font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 }
             }
             .padding(10).frame(maxWidth: .infinity, alignment: .leading)
@@ -264,11 +264,11 @@ struct TrebleDroidPixelDashboard: View {
     private var devicePanel: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Cihazlar").font(.system(size: 19, weight: .bold))
+                Text("devices").font(.system(size: 19, weight: .bold))
                 Spacer()
                 squareButton("arrow.clockwise", size: 37) { actions.scan() }
             }
-            Text("Ağınızdaki Android cihazlarını keşfedin ve bağlanın.")
+            Text("scan_network_mdns")
                 .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 10) {
@@ -276,31 +276,31 @@ struct TrebleDroidPixelDashboard: View {
                     Image(systemName: "wifi").font(.system(size: 27, weight: .semibold))
                         .foregroundStyle(Palette.blue)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Yeni Cihaz Ara").fontWeight(.bold)
-                        Text("Ağınızdaki cihazları tarayın (mDNS)")
+                        Text("new_device_search").fontWeight(.bold)
+                        Text("scan_network_mdns")
                             .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
                     }
                 }
-                primaryButton("Cihazları Tara", icon: "arrow.clockwise") { actions.scan() }
+                primaryButton("scan_devices", icon: "arrow.clockwise") { actions.scan() }
             }
-            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
-            .strokePanel()
-            .padding(.top, 7)
-            HStack(spacing: 7) {
-                Image(systemName: "desktopcomputer")
-                Text("Bulunan Cihazlar (\(devices.count))").fontWeight(.semibold)
-            }.padding(.top, 7)
+                        .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+                        .strokePanel()
+                        .padding(.top, 7)
+                        HStack(spacing: 7) {
+                            Image(systemName: "desktopcomputer")
+                            Text("found_devices").fontWeight(.semibold)
+                        }.padding(.top, 7)
             ForEach(devices) { device in
                 deviceRow(device)
             }
             Rectangle().fill(Palette.outline).frame(height: 1).padding(.vertical, 6)
-            Label("Elle Bağlan", systemImage: "link").font(.system(size: 16, weight: .bold))
-            TextField("IP adresi (örn. 192.168.1.4:5555)", text: $address)
+            Label("manual_connect", systemImage: "link").font(.system(size: 16, weight: .bold))
+            TextField("ip_placeholder", text: $address)
                 .textFieldStyle(.plain).font(.system(size: 11))
                 .padding(11).frame(height: 43)
                 .background(Palette.field, in: RoundedRectangle(cornerRadius: 8))
                 .strokePanel(8)
-            primaryButton("Bağlan") { actions.connectAddress(address) }
+            primaryButton("connect") { actions.connectAddress(address) }
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 14)
@@ -394,11 +394,11 @@ struct TrebleDroidPixelDashboard: View {
             }
 
             VStack(alignment: .leading, spacing: 10) {
-                Label("DroidDeck", systemImage: "circle.hexagongrid.fill")
+                Label("about", systemImage: "circle.hexagongrid.fill")
                     .font(.system(size: 15, weight: .bold))
-                Text("Android Cihaz Kontrol Merkezi")
+                Text("android_control_center")
                     .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
-                Text("adb + gömülü scrcpy istemcisi ile televizyon, telefon ve tabletinizi Mac'ten yönetin.")
+                Text("control_with_adb_scrcpy")
                     .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -406,9 +406,9 @@ struct TrebleDroidPixelDashboard: View {
             .strokePanel()
 
             VStack(alignment: .leading, spacing: 10) {
-                Label("Güvenlik", systemImage: "lock.shield")
+                Label("security_local_only", systemImage: "lock.shield")
                     .font(.system(size: 13, weight: .semibold))
-                Text("Uygulama yalnızca YEREL AĞ üzerinden çalışır. ADB tam cihaz kontrolü demektir; internete açılmamalıdır.")
+                Text("security_local_only")
                     .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -416,9 +416,9 @@ struct TrebleDroidPixelDashboard: View {
             .strokePanel()
 
             VStack(alignment: .leading, spacing: 10) {
-                Label("Cihaz Koruması", systemImage: "leaf")
+                Label("device_protection", systemImage: "leaf")
                     .font(.system(size: 13, weight: .semibold))
-                Text("Önizleme açık kalmaz — siz açarsınız, siz kapatırsınız. Sıcaklık yükselirse otomatik durur, uygulama kapanınca yayın kesilir.")
+                Text("device_protection")
                     .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -474,7 +474,7 @@ struct TrebleDroidPixelDashboard: View {
         VStack(spacing: 12) {
             HStack(spacing: 9) {
                 Image(systemName: "ipad.landscape").foregroundStyle(Palette.textMuted)
-                Text("Cihaz Ekranı").font(.system(size: 18, weight: .bold))
+                Text("screen_title").font(.system(size: 18, weight: .bold))
                 Spacer()
                 // Önizleme açma/kapama — sürekli açık kalmaz, cihazı yormaz.
                 squareButton(previewActive ? "stop.fill" : "play.fill") {
@@ -487,24 +487,24 @@ struct TrebleDroidPixelDashboard: View {
                 squareButton("arrow.clockwise") { actions.command("refresh") }
                 squareButton("arrow.up.left.and.arrow.down.right") { actions.command("fullscreen") }
                 // Kalite seçici — normal butonlar, yan yana.
-                HStack(spacing: 5) {
-                    ForEach(["Düşük", "Dengeli", "Yüksek (TV)"], id: \.self) { q in
-                        Button {
-                            actions.command("quality:\(q)")
-                            currentQuality = q
-                        } label: {
-                            Text(q == "Yüksek (TV)" ? "TV" : q)
-                                .font(.system(size: 10, weight: .medium))
-                                .padding(.horizontal, 8).frame(height: 28)
-                                .background(currentQuality == q ? Palette.blue : Palette.raised,
-                                          in: RoundedRectangle(cornerRadius: 6))
-                                .overlay(RoundedRectangle(cornerRadius: 6)
-                                    .stroke(currentQuality == q ? Palette.blue : Palette.outline))
-                                .foregroundStyle(currentQuality == q ? .white : Palette.textMuted)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
+                                HStack(spacing: 5) {
+                                    ForEach(["quality_low", "quality_balanced", "quality_high"], id: \.self) { q in
+                                        Button {
+                                            actions.command("quality:\\(q)")
+                                            currentQuality = q
+                                        } label: {
+                                            Text(q == "quality_high" ? "TV" : (q == "quality_low" ? "low" : "balanced"))
+                                                .font(.system(size: 10, weight: .medium))
+                                                .padding(.horizontal, 8).frame(height: 28)
+                                                .background(currentQuality == q ? Palette.blue : Palette.raised,
+                                                          in: RoundedRectangle(cornerRadius: 6))
+                                                .overlay(RoundedRectangle(cornerRadius: 6)
+                                                    .stroke(currentQuality == q ? Palette.blue : Palette.outline))
+                                                .foregroundStyle(currentQuality == q ? .white : Palette.textMuted)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
             }
             .frame(height: 37)
             GeometryReader { geometry in

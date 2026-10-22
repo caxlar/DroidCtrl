@@ -14,12 +14,12 @@ struct RemotePanelView: View {
                 .background(Color(nsColor: .windowBackgroundColor))
             } else {
                 ContentUnavailableView {
-                    Label("Cihaz Seçilmedi", systemImage: "tv.and.mediabox")
+                    Label("no_devices_scan_main", systemImage: "tv.and.mediabox")
                 } description: {
-                    Text("Soldaki listeden bir Android cihazı seçin.\nCihaz görünmüyorsa 'Elle Bağlan' ile IP:port girin.\nBağlantı takıldıysa 'Bağlantıyı Onar' ile adb'yi yeniden başlatın.")
+                    Text("select_device_first")
                 } actions: {
                     HStack(spacing: 10) {
-                        Button("Cihazları Tara") {
+                        Button("scan_devices") {
                             store.refresh()
                         }
                         .buttonStyle(.borderedProminent)
@@ -27,9 +27,9 @@ struct RemotePanelView: View {
                         Button {
                             store.recoverConnection()
                         } label: {
-                            Label("Bağlantıyı Onar", systemImage: "arrow.triangle.2.circlepath")
+                            Label("retry", systemImage: "arrow.triangle.2.circlepath")
                         }
-                        .help("adb'yi yeniden başlatıp tekrar dener — bağlantı takıldığında")
+                        .help("restart_required")
                     }
                 }
             }

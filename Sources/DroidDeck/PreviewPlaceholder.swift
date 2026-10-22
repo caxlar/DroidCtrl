@@ -38,7 +38,7 @@ struct PreviewPlaceholder: View {
                 .buttonStyle(.plain)
                 .onHover { hovering = $0 }
 
-                Text("Ekranı Görüntülemek İçin Tıklayın")
+                Text("preview_placeholder")
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(.white.opacity(0.62))
             }

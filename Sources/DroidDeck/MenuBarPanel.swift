@@ -24,7 +24,7 @@ struct MenuBarPanel: View {
                 }
             }
             if store.devices.isEmpty {
-                Text("Cihaz yok — ana pencereden tarayın")
+                Text("no_devices_scan_main")
             }
         } label: {
             Text("Cihaz: \(store.selectedDevice?.displayName ?? "seçili değil")")
@@ -32,36 +32,36 @@ struct MenuBarPanel: View {
 
         Divider()
 
-        Button("Ekranı Aç / Kilidi Aç") { store.wakeAndUnlock() }
+        Button("wake_unlock") { store.wakeAndUnlock() }
             .keyboardShortcut("u", modifiers: [.command, .shift])
 
-        Button("Ana Sayfa") { store.sendKey(.home) }
+        Button("home") { store.sendKey(.home) }
             .keyboardShortcut("1", modifiers: [.command])
-        Button("Geri") { store.sendKey(.back) }
+        Button("back") { store.sendKey(.back) }
             .keyboardShortcut("[", modifiers: [.command])
-        Button("Oynat / Duraklat") { store.sendMedia(.playPause) }
+        Button("play_pause") { store.sendMedia(.playPause) }
             .keyboardShortcut("p", modifiers: [.command])
-        Button("Sesi Aç") { store.sendKey(.volumeUp) }
+        Button("volume_up") { store.sendKey(.volumeUp) }
             .keyboardShortcut("+", modifiers: [.command])
-        Button("Sesi Kıs") { store.sendKey(.volumeDown) }
+        Button("volume_down") { store.sendKey(.volumeDown) }
             .keyboardShortcut("-", modifiers: [.command])
 
         Divider()
 
         if store.previewActive {
-            Button("Yayını Durdur") { store.stopPreview() }
+            Button("preview_stop") { store.stopPreview() }
         } else {
-            Button("Yayını Başlat") { store.startPreview() }
+            Button("preview_play") { store.startPreview() }
                 .disabled(store.selectedDevice?.state.isControllable != true)
         }
 
         Divider()
 
-        Button("Ana Pencereyi Göster") {
+        Button("show_main_window") {
             NSApp.activate(ignoringOtherApps: true)
             NSApp.windows.first { $0.isVisible }?.makeKeyAndOrderFront(nil)
         }
 
-        Button("DroidDeck'ten Çık") { NSApp.terminate(nil) }
+        Button("quit_app") { NSApp.terminate(nil) }
     }
 }
