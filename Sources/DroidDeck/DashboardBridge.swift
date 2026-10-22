@@ -218,6 +218,10 @@ final class DashboardBridge: ObservableObject {
             store.loadApps()
         case "reboot":
             store.rebootDevice()
+        case "resetLabels":
+            store.resetLabels()
+        case "restartADB":
+            store.restartADBServer()
         case "installApk", "fileTransfer":
             presentFilePicker(kind: command == "installApk" ? .apk : .anyFile)
         case "settings":
@@ -243,6 +247,14 @@ final class DashboardBridge: ObservableObject {
                     store.forceStop(app)
                 } else {
                     store.lastError = "Uygulama bulunamadı: \(package)"
+                }
+            } else if command.hasPrefix("quality:") {
+                let name = String(command.dropFirst("quality:".count))
+                store.previewQuality = (name == "Düşük") ? .low : .balanced
+                // Kalite değişince aktif oturum yeniden kurulmalı.
+                if store.previewActive {
+                    store.stopPreview()
+                    store.startPreview()
                 }
             } else if command.hasPrefix("sidebar:") {
                 sidebarSection = String(command.dropFirst("sidebar:".count))

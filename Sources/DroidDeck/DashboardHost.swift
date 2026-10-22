@@ -25,6 +25,8 @@ struct DashboardHost: View {
             apps: bridge.visualApps,
             actions: bridge.makeActions(),
             previewActive: store.previewActive,
+            sidebarSection: bridge.sidebarSection,
+            currentQuality: store.previewQuality.rawValue,
             screenContent: bridge.screenContent
         )
         .onAppear {

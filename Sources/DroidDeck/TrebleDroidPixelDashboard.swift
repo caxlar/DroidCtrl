@@ -84,6 +84,10 @@ struct TrebleDroidPixelDashboard: View {
     /// Önizlemenin açık olup olmadığı — düğmenin ▶/■ simgesini belirler.
     /// Kullanıcının istediği gibi: sürekli açık kalmaz, kullanıcı açar/kapatır.
     var previewActive: Bool = false
+    /// Sol kenar çubuğu seçimi — hangi panelin gösterildiğini belirler.
+    var sidebarSection: String = "Cihazlar"
+    /// Mevcut önizleme kalitesi — ayarlardaki işareti belirler.
+    var currentQuality: String = "Dengeli"
     /// Provide the existing stream view here. It is fitted to the selected native resolution.
     var screenContent: AnyView? = nil
 
@@ -113,8 +117,15 @@ struct TrebleDroidPixelDashboard: View {
                 HStack(spacing: 0) {
                     globalSidebar
                         .frame(width: 190 * scale)
-                    devicePanel
-                        .frame(width: 252 * scale)
+                    // Kenar çubuğu seçimi — gerçek bölüm geçişi.
+                    Group {
+                        switch sidebarSection {
+                        case "Ayarlar": settingsPanel
+                        case "Hakkında": aboutPanel
+                        default: devicePanel
+                        }
+                    }
+                    .frame(width: 252 * scale)
                     HStack(spacing: 12 * scale) {
                         screenPanel
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -201,9 +212,9 @@ struct TrebleDroidPixelDashboard: View {
 
     private var globalSidebar: some View {
         VStack(alignment: .leading, spacing: 9) {
-            sidebarLink("Cihazlar", icon: "iphone", selected: true, count: devices.count)
-            sidebarLink("Ayarlar", icon: "gearshape")
-            sidebarLink("Hakkında", icon: "info.circle")
+            sidebarLink("Cihazlar", icon: "iphone", selected: sidebarSection == "Cihazlar", count: devices.count)
+            sidebarLink("Ayarlar", icon: "gearshape", selected: sidebarSection == "Ayarlar")
+            sidebarLink("Hakkında", icon: "info.circle", selected: sidebarSection == "Hakkında")
             Spacer()
             HStack(spacing: 9) {
                 Image(systemName: "checkmark.circle.fill")
@@ -287,6 +298,127 @@ struct TrebleDroidPixelDashboard: View {
         .strokePanel(14)
     }
 
+    // MARK: - Kenar çubuğu bölümleri
+
+    /// "Ayarlar" — önizleme kalitesi, termal koruma, etiket önbelleği.
+    private var settingsPanel: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Ayarlar").font(.system(size: 19, weight: .bold))
+                Spacer()
+            }
+            Text("Önizleme, termal koruma ve veri önbelleği.")
+                .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            // Önizleme kalitesi — cihaz yükünü belirler.
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Önizleme Kalitesi", systemImage: "gauge.with.dots.needle.33percent")
+                    .font(.system(size: 13, weight: .semibold))
+                ForEach(["Düşük", "Dengeli"], id: \.self) { quality in
+                    Button {
+                        actions.command("quality:\(quality)")
+                    } label: {
+                        HStack {
+                            Text(quality).font(.system(size: 12))
+                            Spacer()
+                            if quality == currentQuality {
+                                Image(systemName: "checkmark").foregroundStyle(Palette.blue)
+                            }
+                        }
+                        .padding(.horizontal, 11).frame(height: 38)
+                        .background(Palette.raised, in: RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8)
+                            .stroke(quality == currentQuality ? Palette.blue : Palette.outline))
+                    }.buttonStyle(.plain)
+                }
+                Text("Düşük = en az yük. Cihaz ısınırsa otomatik durur.")
+                    .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            // Termal koruma durumu.
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Termal Koruma", systemImage: "thermometer.medium")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Sıcaklık ≥ 42°C olursa önizleme otomatik durur. ≥ 38°C'de uyarı verilir.")
+                    .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            // Bakım.
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Bakım", systemImage: "wrench.and.screwdriver")
+                    .font(.system(size: 13, weight: .semibold))
+                primaryButton("Etiketleri Sıfırla", icon: "arrow.counterclockwise") {
+                    actions.command("resetLabels")
+                }
+                primaryButton("ADB Sunucusunu Yenile", icon: "arrow.triangle.2.circlepath") {
+                    actions.command("restartADB")
+                }
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.top, 25)
+        .background(Palette.surface.opacity(0.42), in: RoundedRectangle(cornerRadius: 14))
+        .strokePanel(14)
+    }
+
+    /// "Hakkında" — uygulama ve güvenlik bilgisi.
+    private var aboutPanel: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Hakkında").font(.system(size: 19, weight: .bold))
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                Label("DroidDeck", systemImage: "circle.hexagongrid.fill")
+                    .font(.system(size: 15, weight: .bold))
+                Text("Android Cihaz Kontrol Merkezi")
+                    .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
+                Text("adb + gömülü scrcpy istemcisi ile televizyon, telefon ve tabletinizi Mac'ten yönetin.")
+                    .font(.system(size: 11)).foregroundStyle(Palette.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Güvenlik", systemImage: "lock.shield")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Uygulama yalnızca YEREL AĞ üzerinden çalışır. ADB tam cihaz kontrolü demektir; internete açılmamalıdır.")
+                    .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Cihaz Koruması", systemImage: "leaf")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Önizleme açık kalmaz — siz açarsınız, siz kapatırsınız. Sıcaklık yükselirse otomatik durur, uygulama kapanınca yayın kesilir.")
+                    .font(.system(size: 10)).foregroundStyle(Palette.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(13).background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+            .strokePanel()
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.top, 25)
+        .background(Palette.surface.opacity(0.42), in: RoundedRectangle(cornerRadius: 14))
+        .strokePanel(14)
+    }
+
     private func deviceRow(_ device: TDVisualDevice) -> some View {
         Button {
             selectedDeviceID = device.id
@@ -355,10 +487,15 @@ struct TrebleDroidPixelDashboard: View {
                         }
                     }
                     .aspectRatio(aspect, contentMode: .fit)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    // ZOOM gerçekten uygulanır: ölçek büyür, taşan kısım
+                    // kırpılır (eski kodda `zoom` hiçbir yere uygulanmıyordu,
+                    // +/- düğmeleri yalnızca yazıyı değiştiriyordu).
+                    .scaleEffect(zoom, anchor: .center)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
                     .clipped()
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Palette.outline, lineWidth: 2))
             }
             HStack(spacing: 11) {
