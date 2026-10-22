@@ -189,7 +189,7 @@ struct TrebleDroidPixelDashboard: View {
             Spacer(minLength: 4)
             squareButton("display", size: 46) { actions.command("display") }
             squareButton("camera", size: 46) { actions.command("screenshot") }
-            squareButton("gearshape.fill", size: 46) { actions.command("settings") }
+            squareButton("gearshape.fill", size: 46) { actions.command("openSettings") }
             squareButton("ellipsis", size: 46) { actions.command("more") }
         }
         .padding(.horizontal, 32)
